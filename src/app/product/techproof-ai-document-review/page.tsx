@@ -5,6 +5,9 @@ import SiteNav from "@/components/SiteNav";
 const requestHref =
   "/request-access?asset=TechProof&source=techproof-product";
 
+const starterPackHref =
+  "/product/techproof-ai-document-review/starter-pack";
+
 export default function TechProofProductPage() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -33,12 +36,19 @@ export default function TechProofProductPage() {
               href={requestHref}
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
-              申请早期访问
+              申请 TechProof 早期访问
+            </a>
+
+            <a
+              href={starterPackHref}
+              className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              查看 Starter Pack
             </a>
 
             <a
               href="/assets/ai-document-review-platform"
-              className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+              className="rounded-full border border-neutral-800 px-6 py-3 text-center font-medium text-neutral-400 transition hover:border-neutral-600 hover:text-neutral-200"
             >
               查看资产结构
             </a>
@@ -115,6 +125,15 @@ export default function TechProofProductPage() {
             <p className="mt-5 text-lg leading-8 text-neutral-300">
               TechProof AI Document Review Platform 的目标不是给学生一个孤立代码片段，而是提供一套可以学习、复现、改造、展示和解释的项目资产结构。
             </p>
+
+            <div className="mt-8">
+              <a
+                href={starterPackHref}
+                className="inline-flex rounded-full border border-neutral-700 px-6 py-3 text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+              >
+                查看 Starter Pack 交付结构
+              </a>
+            </div>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
@@ -153,8 +172,7 @@ export default function TechProofProductPage() {
           </div>
         </div>
       </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-24">
+            <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
@@ -168,6 +186,15 @@ export default function TechProofProductPage() {
             <p className="mt-5 text-lg leading-8 text-neutral-300">
               资产包的价值不在于让学生机械复制，而是提供一条从基础版本到个人化改造的路径。学生需要理解系统结构，并根据自己的方向补充功能、数据、界面或文档。
             </p>
+
+            <div className="mt-8">
+              <a
+                href={starterPackHref}
+                className="inline-flex rounded-full border border-neutral-700 px-6 py-3 text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+              >
+                查看 Starter Pack 路线
+              </a>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -250,10 +277,17 @@ export default function TechProofProductPage() {
               <PriceRow title="完整项目路线与面试防守" price="¥299 起" />
 
               <a
-                href={requestHref}
-                className="mt-6 block rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
+                href={starterPackHref}
+                className="block rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
               >
-                申请早期访问
+                查看 Starter Pack
+              </a>
+
+              <a
+                href={requestHref}
+                className="block rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
+              >
+                申请 TechProof 早期访问
               </a>
             </div>
           </div>
