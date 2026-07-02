@@ -8,11 +8,9 @@ import {
 } from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import {
-  generateAiAnalysis,
   isAdminAuthenticated,
   loginAdmin,
   logoutAdmin,
-  updateRequestStatus,
 } from "./actions";
 
 type SearchParams = Promise<{
@@ -512,7 +510,8 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
       <AiAnalysisBlock request={request} />
 
       <form
-        action={updateRequestStatus}
+        method="post"
+        action="/admin/requests/update"
         className="mt-5 rounded-2xl border border-neutral-800 bg-neutral-950 p-5"
       >
         <input type="hidden" name="requestId" value={request.id} />
@@ -573,7 +572,7 @@ function AiAnalysisBlock({ request }: { request: MajorProofRequest }) {
           </p>
         </div>
 
-        <form action={generateAiAnalysis}>
+        <form method="post" action="/admin/requests/ai-analysis">
           <input type="hidden" name="requestId" value={request.id} />
 
           <button
