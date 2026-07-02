@@ -23,6 +23,11 @@ type MajorProofRequest = {
   expected_price_range: string | null;
   status: RequestStatus | null;
   admin_note: string | null;
+  ai_analysis: string | null;
+  ai_intent_level: string | null;
+  ai_recommended_asset: string | null;
+  ai_followup_message: string | null;
+  ai_analyzed_at: string | null;
   created_at: string;
   updated_at: string | null;
 };
@@ -40,7 +45,7 @@ export async function GET(request: Request) {
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, created_at, updated_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, ai_analysis, ai_intent_level, ai_recommended_asset, ai_followup_message, ai_analyzed_at, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
 
@@ -87,7 +92,9 @@ function filterRequests(
     if (asset !== "all") {
       const interestedAssets = request.interested_assets || [];
       const assetMatches =
-        request.asset_intent === asset || interestedAssets.includes(asset);
+        request.asset_intent === asset ||
+        request.ai_recommended_asset === asset ||
+        interestedAssets.includes(asset);
 
       if (!assetMatches) {
         return false;
@@ -112,6 +119,10 @@ function filterRequests(
         request.purchase_intent,
         request.expected_price_range,
         request.admin_note,
+        request.ai_analysis,
+        request.ai_intent_level,
+        request.ai_recommended_asset,
+        request.ai_followup_message,
         ...(request.interested_assets || []),
       ]
         .filter(Boolean)
@@ -146,6 +157,11 @@ function buildCsv(requests: MajorProofRequest[]) {
     "status",
     "status_label",
     "admin_note",
+    "ai_intent_level",
+    "ai_recommended_asset",
+    "ai_analysis",
+    "ai_followup_message",
+    "ai_analyzed_at",
     "created_at",
     "updated_at",
   ];
@@ -171,6 +187,11 @@ function buildCsv(requests: MajorProofRequest[]) {
       status,
       getStatusLabel(status),
       request.admin_note || "",
+      request.ai_intent_level || "",
+      request.ai_recommended_asset || "",
+      request.ai_analysis || "",
+      request.ai_followup_message || "",
+      request.ai_analyzed_at || "",
       request.created_at,
       request.updated_at || "",
     ];
