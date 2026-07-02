@@ -13,6 +13,8 @@ type RoadmapPreview = {
   existing_experience: string | null;
   primary_need: string;
   ai_result: string;
+  converted_request_id: string | null;
+  converted_at: string | null;
   created_at: string;
 };
 
@@ -29,17 +31,20 @@ export async function GET(request: Request) {
   const { data, error } = await supabaseAdmin
     .from("majorproof_ai_roadmap_previews")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_asset, existing_experience, primary_need, ai_result, created_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_asset, existing_experience, primary_need, ai_result, converted_request_id, converted_at, created_at"
     )
     .order("created_at", { ascending: false });
 
   if (error) {
-    return new NextResponse(`Failed to export roadmap previews: ${error.message}`, {
-      status: 500,
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-      },
-    });
+    return new NextResponse(
+      `Failed to export roadmap previews: ${error.message}`,
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      }
+    );
   }
 
   const previews = (data || []) as RoadmapPreview[];
@@ -68,6 +73,9 @@ function buildCsv(previews: RoadmapPreview[]) {
     "existing_experience",
     "primary_need",
     "ai_result",
+    "converted",
+    "converted_request_id",
+    "converted_at",
     "created_at",
   ];
 
@@ -82,6 +90,9 @@ function buildCsv(previews: RoadmapPreview[]) {
     preview.existing_experience || "",
     preview.primary_need,
     preview.ai_result,
+    preview.converted_request_id ? "yes" : "no",
+    preview.converted_request_id || "",
+    preview.converted_at || "",
     preview.created_at,
   ]);
 
