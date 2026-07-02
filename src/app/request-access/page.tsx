@@ -13,7 +13,7 @@ export default function RequestAccessPage() {
         </p>
 
         <h1 className="max-w-4xl text-5xl font-semibold tracking-tight">
-          申请早期访问。
+          申请早期访问
         </h1>
 
         <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">

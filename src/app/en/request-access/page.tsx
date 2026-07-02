@@ -13,7 +13,7 @@ export default function EnglishRequestAccessPage() {
         </p>
 
         <h1 className="max-w-4xl text-5xl font-semibold tracking-tight">
-          Request early access.
+          Request early access
         </h1>
 
         <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
@@ -73,7 +73,7 @@ export default function EnglishRequestAccessPage() {
               <AssetCheckboxGroup />
 
               <TextArea
-                label="What problem do you most need to solve?"
+                label="What problem do you most need to solve"
                 name="primaryNeed"
                 placeholder="For example: I do not have projects for my resume; I do not know what a finance analysis asset should look like; I cannot explain my experience clearly in interviews."
                 required

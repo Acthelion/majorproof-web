@@ -12,7 +12,7 @@ export default function EnglishRequestAccessThanksPage() {
         </p>
 
         <h1 className="text-5xl font-semibold tracking-tight">
-          Your request has been received.
+          Your request has been received
         </h1>
 
         <p className="mt-6 text-lg leading-8 text-neutral-300">

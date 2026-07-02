@@ -12,7 +12,7 @@ export default function RequestAccessThanksPage() {
         </p>
 
         <h1 className="text-5xl font-semibold tracking-tight">
-          已收到你的申请。
+          已收到你的申请
         </h1>
 
         <p className="mt-6 text-lg leading-8 text-neutral-300">
