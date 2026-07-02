@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { openai } from "@/lib/openai";
+import { getOpenAIClient, getOpenAIModel } from "@/lib/openai";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import {
   allowedStatuses,
@@ -118,6 +118,12 @@ export async function generateAiAnalysis(formData: FormData) {
     redirect("/admin/requests?error=missing-request-id");
   }
 
+  const client = getOpenAIClient();
+
+  if (!client) {
+    redirect("/admin/requests?error=missing-openai-key");
+  }
+
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
@@ -139,9 +145,11 @@ export async function generateAiAnalysis(formData: FormData) {
 
   const request = data as MajorProofRequest;
 
+  let aiResult: AiAnalysisResult;
+
   try {
-    const response = await openai.responses.create({
-      model: "gpt-5.4-mini",
+    const response = await client.responses.create({
+      model: getOpenAIModel(),
       input: [
         {
           role: "system",
@@ -156,34 +164,34 @@ export async function generateAiAnalysis(formData: FormData) {
     });
 
     const rawText = response.output_text || "";
-    const aiResult = parseAiAnalysis(rawText);
-
-    const { error: updateError } = await supabaseAdmin
-      .from("majorproof_requests")
-      .update({
-        ai_analysis: aiResult.analysis,
-        ai_intent_level: aiResult.intentLevel,
-        ai_recommended_asset: aiResult.recommendedAsset,
-        ai_followup_message: aiResult.followupMessage,
-        ai_analyzed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", requestId);
-
-    if (updateError) {
-      console.error("Failed to save AI analysis:", {
-        message: updateError.message,
-        code: updateError.code,
-        details: updateError.details,
-        hint: updateError.hint,
-      });
-
-      redirect("/admin/requests?error=ai-save-failed");
-    }
+    aiResult = parseAiAnalysis(rawText);
   } catch (error) {
     console.error("OpenAI analysis failed:", error);
 
     redirect("/admin/requests?error=ai-generate-failed");
+  }
+
+  const { error: updateError } = await supabaseAdmin
+    .from("majorproof_requests")
+    .update({
+      ai_analysis: aiResult.analysis,
+      ai_intent_level: aiResult.intentLevel,
+      ai_recommended_asset: aiResult.recommendedAsset,
+      ai_followup_message: aiResult.followupMessage,
+      ai_analyzed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", requestId);
+
+  if (updateError) {
+    console.error("Failed to save AI analysis:", {
+      message: updateError.message,
+      code: updateError.code,
+      details: updateError.details,
+      hint: updateError.hint,
+    });
+
+    redirect("/admin/requests?error=ai-save-failed");
   }
 
   redirect("/admin/requests");
@@ -240,7 +248,8 @@ function parseAiAnalysis(rawText: string): AiAnalysisResult {
     analysis: rawText || "AI 未返回有效分析结果。",
     intentLevel: "medium",
     recommendedAsset: "unclear",
-    followupMessage: "你好，我们已经收到你的申请。根据你填写的信息，我们会判断是否适合进入 MajorProof 的早期测试名单。",
+    followupMessage:
+      "你好，我们已经收到你的申请。根据你填写的信息，我们会判断是否适合进入 MajorProof 的早期测试名单。",
   };
 
   const jsonText = extractJsonObject(rawText);
