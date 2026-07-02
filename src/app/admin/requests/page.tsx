@@ -860,6 +860,10 @@ function getAdminErrorMessage(error: string) {
   if (error === "ai-read-failed") {
     return "AI 分析失败：无法读取这条申请记录。";
   }
+    
+  if (error === "missing-openai-key") {
+    return "AI 分析失败：Netlify 或本地环境变量缺少 OPENAI_API_KEY。";
+  }
 
   if (error === "ai-save-failed") {
     return "AI 分析失败：结果无法保存到 Supabase。";
