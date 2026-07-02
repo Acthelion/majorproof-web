@@ -46,95 +46,112 @@ export default async function AiRoadmapPreviewResultPage({
   const preview = data as RoadmapPreview;
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-50">
+    <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <SiteNav locale="zh" />
 
-      <section className="mx-auto max-w-5xl px-6 pb-20 pt-16">
-        <div className="mb-10">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.32em] text-amber-300">
-            MajorProof AI Preview
+      <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="max-w-5xl">
+          <p className="mb-5 text-sm uppercase tracking-[0.3em] text-neutral-500">
+            MajorProof · AI 资产路线预览结果
           </p>
 
-          <h1 className="text-4xl font-semibold tracking-tight text-white md:text-6xl">
-            AI Asset Roadmap Result
+          <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
+            你的专业能力
+            <br />
+            资产路线预览
           </h1>
 
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-            This is a roadmap preview, not a final Proof Asset. It helps you
-            identify the most suitable asset direction and the evidence you
-            still need to build.
+          <p className="mt-8 max-w-3xl text-xl leading-9 text-neutral-300">
+            这是一份路线预览，不是最终交付资产。它的作用是帮助你判断当前背景适合从哪个 Proof Asset 方向开始，以及后续需要补哪些成果、证据和表达材料。
           </p>
-        </div>
 
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <SummaryCard title="Current major" body={preview.current_major} />
-          <SummaryCard
-            title="Current year"
-            body={preview.current_year || "Not provided"}
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-400">
+            结果只能作为规划参考。MajorProof 不承诺实习、录取、成绩、奖学金或就业结果，也不支持代写作业或编造经历。
+          </p>
+
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+            <Link
+              href="/ai-roadmap-preview"
+              className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
+            >
+              重新生成路线预览
+            </Link>
+
+            <Link
+              href="/request-access"
+              className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              申请早期访问
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-neutral-800 bg-neutral-900/40 px-6 py-14">
+        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">
+          <SummaryBlock title="当前专业" body={preview.current_major} />
+          <SummaryBlock
+            title="当前年级"
+            body={preview.current_year || "未填写"}
           />
-          <SummaryCard
-            title="Asset direction"
-            body={preview.interested_asset || "Not sure yet"}
+          <SummaryBlock
+            title="资产方向"
+            body={preview.interested_asset || "暂不确定"}
           />
+          <SummaryBlock title="生成时间" body={formatDate(preview.created_at)} />
         </div>
+      </section>
 
-        <div className="mb-8 rounded-3xl border border-neutral-800 bg-neutral-900/70 p-6 md:p-8">
-          <h2 className="text-xl font-semibold text-white">Target goal</h2>
-          <p className="mt-4 text-sm leading-7 text-neutral-300">
-            {preview.target_goal}
-          </p>
+      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[0.85fr_1.15fr]">
+        <aside className="space-y-5">
+          <InfoPanel title="你的目标" body={preview.target_goal} />
 
-          <h2 className="mt-8 text-xl font-semibold text-white">
-            Main problem
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-neutral-300">
-            {preview.primary_need}
-          </p>
-        </div>
+          <InfoPanel title="当前主要问题" body={preview.primary_need} />
 
-        <article className="rounded-3xl border border-amber-400/20 bg-neutral-900 p-6 shadow-2xl shadow-black/30 md:p-8">
-          <h2 className="text-2xl font-semibold text-white">
-            AI generated roadmap preview
-          </h2>
+          <InfoPanel
+            title="已有经历"
+            body={preview.existing_experience || "未填写"}
+          />
 
-          <div className="mt-6 whitespace-pre-wrap rounded-2xl border border-neutral-800 bg-neutral-950 p-5 text-sm leading-8 text-neutral-200">
+          <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
+            <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
+              Next Step
+            </p>
+
+            <h2 className="text-2xl font-semibold">想继续做成完整资产</h2>
+
+            <p className="mt-4 leading-7 text-neutral-400">
+              如果这份路线符合你的方向，可以提交正式申请，进入 MajorProof 早期测试名单。
+            </p>
+
+            <Link
+              href="/request-access"
+              className="mt-6 inline-flex rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              申请早期访问
+            </Link>
+          </div>
+        </aside>
+
+        <article className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6 md:p-8">
+          <div className="mb-8">
+            <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
+              Generated Roadmap
+            </p>
+
+            <h2 className="text-4xl font-semibold tracking-tight">
+              AI 生成的路线预览
+            </h2>
+
+            <p className="mt-5 text-lg leading-8 text-neutral-300">
+              下面的内容按照 MajorProof 的 Proof Asset 结构生成，包括资产方向、项目建议、最终成果、过程证据、简历表达、面试防守和扩展路线。
+            </p>
+          </div>
+
+          <div className="whitespace-pre-wrap rounded-3xl border border-neutral-800 bg-neutral-950 p-6 text-sm leading-8 text-neutral-300 md:p-8">
             {preview.ai_result}
           </div>
         </article>
-
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          <div className="rounded-3xl border border-neutral-800 bg-neutral-900/60 p-6">
-            <h2 className="text-xl font-semibold text-white">
-              Build the full asset
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-neutral-300">
-              If this direction fits your goal, submit a formal request and join
-              the MajorProof early validation list.
-            </p>
-            <Link
-              href="/request-access"
-              className="mt-6 inline-flex rounded-2xl bg-amber-300 px-5 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-amber-200"
-            >
-              Submit formal request
-            </Link>
-          </div>
-
-          <div className="rounded-3xl border border-neutral-800 bg-neutral-900/60 p-6">
-            <h2 className="text-xl font-semibold text-white">
-              Generate again
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-neutral-300">
-              If your first input was too short, add more course, project,
-              skill, role, or application details and generate again.
-            </p>
-            <Link
-              href="/ai-roadmap-preview"
-              className="mt-6 inline-flex rounded-2xl border border-neutral-700 px-5 py-3 text-sm font-semibold text-neutral-100 transition hover:border-amber-300 hover:text-amber-200"
-            >
-              Back to form
-            </Link>
-          </div>
-        </div>
       </section>
 
       <PublicFooter locale="zh" />
@@ -142,11 +159,32 @@ export default async function AiRoadmapPreviewResultPage({
   );
 }
 
-function SummaryCard({ title, body }: { title: string; body: string }) {
+function SummaryBlock({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-3xl border border-neutral-800 bg-neutral-900/60 p-5">
-      <h2 className="text-sm font-medium text-neutral-400">{title}</h2>
-      <p className="mt-3 text-base font-semibold text-white">{body}</p>
+    <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
+      <p className="text-sm text-neutral-500">{title}</p>
+      <p className="mt-3 text-xl font-semibold text-neutral-100">{body}</p>
     </div>
   );
+}
+
+function InfoPanel({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
+      <h2 className="text-2xl font-semibold">{title}</h2>
+      <p className="mt-4 whitespace-pre-wrap leading-7 text-neutral-400">
+        {body}
+      </p>
+    </div>
+  );
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
