@@ -27,6 +27,7 @@ export default function RequestAccessThanksPage() {
           >
             查看资产库
           </a>
+
           <a
             href="/"
             className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
