@@ -8,6 +8,7 @@ import {
 } from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import {
+  generateAiAnalysis,
   isAdminAuthenticated,
   loginAdmin,
   logoutAdmin,
@@ -39,6 +40,11 @@ type MajorProofRequest = {
   expected_price_range: string | null;
   status: RequestStatus | null;
   admin_note: string | null;
+  ai_analysis: string | null;
+  ai_intent_level: string | null;
+  ai_recommended_asset: string | null;
+  ai_followup_message: string | null;
+  ai_analyzed_at: string | null;
   created_at: string;
   updated_at: string | null;
 };
@@ -115,7 +121,7 @@ export default async function AdminRequestsPage({
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, created_at, updated_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, ai_analysis, ai_intent_level, ai_recommended_asset, ai_followup_message, ai_analyzed_at, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
 
@@ -136,6 +142,10 @@ export default async function AdminRequestsPage({
     (request) => request.willing_to_test
   ).length;
 
+  const aiAnalyzedCount = requests.filter(
+    (request) => request.ai_analyzed_at
+  ).length;
+
   const assetOptions = getAssetOptions(allRequests);
   const sourceOptions = getSourceOptions(allRequests);
 
@@ -145,6 +155,8 @@ export default async function AdminRequestsPage({
   const assetIntentCounts = countByField(requests, "asset_intent");
   const purchaseIntentCounts = countByField(requests, "purchase_intent");
   const priceRangeCounts = countByField(requests, "expected_price_range");
+  const aiIntentCounts = countByField(requests, "ai_intent_level");
+  const aiAssetCounts = countByField(requests, "ai_recommended_asset");
   const statusCounts = countStatuses(requests);
 
   const exportHref = buildExportHref(filters);
@@ -166,7 +178,7 @@ export default async function AdminRequestsPage({
             </h1>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-              这里用于查看、筛选、导出和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、购买意向、价格区间和后续跟进状态。
+              这里用于查看、筛选、导出、AI 分析和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、购买意向、价格区间、AI 判断和后续跟进状态。
             </p>
           </div>
 
@@ -210,13 +222,7 @@ export default async function AdminRequestsPage({
             value={`${filteredTotal} / ${total}`}
           />
           <StatCard title="愿意早期测试" value={String(willingToTestCount)} />
-          <StatCard
-            title="高意向用户"
-            value={String(
-              requests.filter((request) => request.status === "qualified")
-                .length
-            )}
-          />
+          <StatCard title="AI 已分析" value={String(aiAnalyzedCount)} />
           <StatCard
             title="最近提交"
             value={requests[0] ? formatDate(requests[0].created_at) : "暂无"}
@@ -225,6 +231,8 @@ export default async function AdminRequestsPage({
 
         <div className="mb-8 grid gap-5 md:grid-cols-2">
           <SummaryCard title="状态统计" items={statusCounts} />
+          <SummaryCard title="AI 意向等级统计" items={aiIntentCounts} />
+          <SummaryCard title="AI 推荐资产统计" items={aiAssetCounts} />
           <SummaryCard title="购买意向统计" items={purchaseIntentCounts} />
           <SummaryCard title="价格区间统计" items={priceRangeCounts} />
           <SummaryCard title="资产方向统计" items={assetCounts} />
@@ -444,6 +452,12 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
               更新时间：{formatDateTime(request.updated_at)}
             </p>
           ) : null}
+
+          {request.ai_analyzed_at ? (
+            <p className="mt-1 text-sm text-neutral-600">
+              AI 分析时间：{formatDateTime(request.ai_analyzed_at)}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -453,6 +467,9 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
           {request.asset_intent ? <Tag>{request.asset_intent}</Tag> : null}
           {request.expected_price_range ? (
             <Tag>{request.expected_price_range}</Tag>
+          ) : null}
+          {request.ai_intent_level ? (
+            <Tag>AI {request.ai_intent_level}</Tag>
           ) : null}
           {request.willing_to_test ? <Tag>愿意早期测试</Tag> : null}
         </div>
@@ -491,6 +508,8 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
           {request.primary_need}
         </p>
       </div>
+
+      <AiAnalysisBlock request={request} />
 
       <form
         action={updateRequestStatus}
@@ -540,6 +559,65 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
         </button>
       </form>
     </article>
+  );
+}
+
+function AiAnalysisBlock({ request }: { request: MajorProofRequest }) {
+  return (
+    <div className="mt-5 rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+      <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">AI 分析结果</h3>
+          <p className="mt-2 text-sm leading-6 text-neutral-500">
+            用于内部判断用户画像、意向等级、资产匹配和跟进话术。
+          </p>
+        </div>
+
+        <form action={generateAiAnalysis}>
+          <input type="hidden" name="requestId" value={request.id} />
+
+          <button
+            type="submit"
+            className="rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+          >
+            {request.ai_analyzed_at ? "重新 AI 分析" : "AI 分析申请"}
+          </button>
+        </form>
+      </div>
+
+      {request.ai_analysis ? (
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <InfoBlock
+              title="AI 意向等级"
+              body={request.ai_intent_level || "未返回"}
+            />
+            <InfoBlock
+              title="AI 推荐资产"
+              body={request.ai_recommended_asset || "未返回"}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+            <p className="mb-2 text-sm text-neutral-500">AI 用户分析</p>
+            <p className="whitespace-pre-wrap leading-8 text-neutral-300">
+              {request.ai_analysis}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+            <p className="mb-2 text-sm text-neutral-500">建议跟进话术</p>
+            <p className="whitespace-pre-wrap leading-8 text-neutral-300">
+              {request.ai_followup_message || "未返回"}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p className="leading-7 text-neutral-500">
+          暂无 AI 分析。点击按钮后，系统会根据申请内容生成内部判断和建议话术。
+        </p>
+      )}
+    </div>
   );
 }
 function InfoBlock({ title, body }: { title: string; body: string }) {
@@ -609,6 +687,10 @@ function filterRequests(
         request.purchase_intent,
         request.expected_price_range,
         request.admin_note,
+        request.ai_analysis,
+        request.ai_intent_level,
+        request.ai_recommended_asset,
+        request.ai_followup_message,
         ...(request.interested_assets || []),
       ]
         .filter(Boolean)
@@ -647,6 +729,8 @@ function countByField(
     | "asset_intent"
     | "purchase_intent"
     | "expected_price_range"
+    | "ai_intent_level"
+    | "ai_recommended_asset"
   >
 ) {
   const counts = new Map<string, number>();
@@ -687,6 +771,10 @@ function getAssetOptions(requests: MajorProofRequest[]) {
   for (const request of requests) {
     if (request.asset_intent) {
       values.add(request.asset_intent);
+    }
+
+    if (request.ai_recommended_asset) {
+      values.add(request.ai_recommended_asset);
     }
 
     for (const asset of request.interested_assets || []) {
@@ -767,6 +855,18 @@ function getAdminErrorMessage(error: string) {
 
   if (error === "update-failed") {
     return "保存失败，请检查 Supabase 字段是否已经创建。";
+  }
+
+  if (error === "ai-read-failed") {
+    return "AI 分析失败：无法读取这条申请记录。";
+  }
+
+  if (error === "ai-save-failed") {
+    return "AI 分析失败：结果无法保存到 Supabase。";
+  }
+
+  if (error === "ai-generate-failed") {
+    return "AI 分析失败：OpenAI 请求失败，请检查 OPENAI_API_KEY、模型名称和账户额度。";
   }
 
   return "操作失败，请稍后重试。";
