@@ -5,6 +5,7 @@ import { submitAccessRequest } from "./actions";
 type SearchParams = Promise<{
   source?: string;
   asset?: string;
+  error?: string;
 }>;
 
 export default async function RequestAccessPage({
@@ -15,6 +16,7 @@ export default async function RequestAccessPage({
   const resolvedSearchParams = await searchParams;
   const sourcePage = normalizeTrackingValue(resolvedSearchParams.source);
   const assetIntent = normalizeTrackingValue(resolvedSearchParams.asset);
+  const error = normalizeTrackingValue(resolvedSearchParams.error);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -33,6 +35,14 @@ export default async function RequestAccessPage({
           MajorProof 当前处于产品验证阶段。你可以提交专业方向、目标场景和最需要的资产类型。
           我们会根据真实需求决定首批资产包的优先级。
         </p>
+
+        {error ? (
+          <div className="mt-8 rounded-3xl border border-red-900/60 bg-red-950/40 p-5 text-sm leading-7 text-red-200">
+            {error === "missing-fields"
+              ? "请填写联系方式、当前专业和主要需求后再提交。"
+              : "提交失败。请稍后重试，或换一个联系方式提交。"}
+          </div>
+        ) : null}
 
         {sourcePage || assetIntent ? (
           <div className="mt-8 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
@@ -166,6 +176,7 @@ function Field({
         {label}
         {required ? <span className="text-neutral-500"> *</span> : null}
       </span>
+
       <input
         name={name}
         required={required}
@@ -193,6 +204,7 @@ function TextArea({
         {label}
         {required ? <span className="text-neutral-500"> *</span> : null}
       </span>
+
       <textarea
         name={name}
         required={required}
