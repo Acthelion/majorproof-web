@@ -2,7 +2,20 @@ import PublicFooter from "@/components/PublicFooter";
 import SiteNav from "@/components/SiteNav";
 import { submitAccessRequest } from "./actions";
 
-export default function RequestAccessPage() {
+type SearchParams = Promise<{
+  source?: string;
+  asset?: string;
+}>;
+
+export default async function RequestAccessPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const sourcePage = normalizeTrackingValue(resolvedSearchParams.source);
+  const assetIntent = normalizeTrackingValue(resolvedSearchParams.asset);
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <SiteNav locale="zh" />
@@ -21,12 +34,23 @@ export default function RequestAccessPage() {
           我们会根据真实需求决定首批资产包的优先级。
         </p>
 
+        {sourcePage || assetIntent ? (
+          <div className="mt-8 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+            <p className="text-sm leading-7 text-neutral-400">
+              {assetIntent ? `当前意向资产：${assetIntent}` : "当前来源已记录"}
+              {sourcePage ? ` · 来源：${sourcePage}` : ""}
+            </p>
+          </div>
+        ) : null}
+
         <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <form
             action={submitAccessRequest}
             className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6"
           >
             <input type="hidden" name="locale" value="zh" />
+            <input type="hidden" name="sourcePage" value={sourcePage} />
+            <input type="hidden" name="assetIntent" value={assetIntent} />
 
             <div className="grid gap-5">
               <Field
@@ -68,7 +92,7 @@ export default function RequestAccessPage() {
                 ]}
               />
 
-              <AssetCheckboxGroup />
+              <AssetCheckboxGroup assetIntent={assetIntent} />
 
               <TextArea
                 label="你目前最需要解决的问题"
@@ -194,6 +218,7 @@ function SelectField({
       <span className="mb-2 block text-sm font-medium text-neutral-300">
         {label}
       </span>
+
       <select
         name={name}
         className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition focus:border-neutral-500"
@@ -209,7 +234,7 @@ function SelectField({
   );
 }
 
-function AssetCheckboxGroup() {
+function AssetCheckboxGroup({ assetIntent }: { assetIntent: string }) {
   const options = [
     "TechProof",
     "FinanceProof",
@@ -236,6 +261,7 @@ function AssetCheckboxGroup() {
               type="checkbox"
               name="interestedAssets"
               value={option}
+              defaultChecked={assetIntent === option}
               className="mt-0.5 h-4 w-4 accent-neutral-100"
             />
             {option}
@@ -253,4 +279,12 @@ function InfoCard({ title, body }: { title: string; body: string }) {
       <p className="leading-7 text-neutral-400">{body}</p>
     </div>
   );
+}
+
+function normalizeTrackingValue(value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return value.trim().slice(0, 120);
 }

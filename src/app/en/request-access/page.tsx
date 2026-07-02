@@ -2,7 +2,20 @@ import PublicFooter from "@/components/PublicFooter";
 import SiteNav from "@/components/SiteNav";
 import { submitAccessRequest } from "@/app/request-access/actions";
 
-export default function EnglishRequestAccessPage() {
+type SearchParams = Promise<{
+  source?: string;
+  asset?: string;
+}>;
+
+export default async function EnglishRequestAccessPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const sourcePage = normalizeTrackingValue(resolvedSearchParams.source);
+  const assetIntent = normalizeTrackingValue(resolvedSearchParams.asset);
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <SiteNav locale="en" />
@@ -23,12 +36,25 @@ export default function EnglishRequestAccessPage() {
           packs.
         </p>
 
+        {sourcePage || assetIntent ? (
+          <div className="mt-8 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+            <p className="text-sm leading-7 text-neutral-400">
+              {assetIntent
+                ? `Current asset intent: ${assetIntent}`
+                : "Current source recorded"}
+              {sourcePage ? ` · Source: ${sourcePage}` : ""}
+            </p>
+          </div>
+        ) : null}
+
         <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <form
             action={submitAccessRequest}
             className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6"
           >
             <input type="hidden" name="locale" value="en" />
+            <input type="hidden" name="sourcePage" value={sourcePage} />
+            <input type="hidden" name="assetIntent" value={assetIntent} />
 
             <div className="grid gap-5">
               <Field
@@ -70,7 +96,7 @@ export default function EnglishRequestAccessPage() {
                 ]}
               />
 
-              <AssetCheckboxGroup />
+              <AssetCheckboxGroup assetIntent={assetIntent} />
 
               <TextArea
                 label="What problem do you most need to solve"
@@ -213,7 +239,7 @@ function SelectField({
   );
 }
 
-function AssetCheckboxGroup() {
+function AssetCheckboxGroup({ assetIntent }: { assetIntent: string }) {
   const options = [
     "TechProof",
     "FinanceProof",
@@ -240,6 +266,7 @@ function AssetCheckboxGroup() {
               type="checkbox"
               name="interestedAssets"
               value={option}
+              defaultChecked={assetIntent === option}
               className="mt-0.5 h-4 w-4 accent-neutral-100"
             />
             {option}
@@ -257,4 +284,12 @@ function InfoCard({ title, body }: { title: string; body: string }) {
       <p className="leading-7 text-neutral-400">{body}</p>
     </div>
   );
+}
+
+function normalizeTrackingValue(value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return value.trim().slice(0, 120);
 }

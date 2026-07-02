@@ -18,6 +18,8 @@ type MajorProofRequest = {
   primary_need: string;
   language_preference: string | null;
   willing_to_test: boolean;
+  source_page: string | null;
+  asset_intent: string | null;
   created_at: string;
 };
 
@@ -39,9 +41,7 @@ export default async function AdminRequestsPage({
             Admin
           </p>
 
-          <h1 className="text-5xl font-semibold tracking-tight">
-            后台登录
-          </h1>
+          <h1 className="text-5xl font-semibold tracking-tight">后台登录</h1>
 
           <p className="mt-6 text-lg leading-8 text-neutral-300">
             请输入后台密码查看 MajorProof 早期访问申请数据。
@@ -90,17 +90,21 @@ export default async function AdminRequestsPage({
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, created_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, created_at"
     )
     .order("created_at", { ascending: false });
 
   const requests = (data || []) as MajorProofRequest[];
 
   const total = requests.length;
-  const willingToTestCount = requests.filter((request) => request.willing_to_test).length;
+  const willingToTestCount = requests.filter(
+    (request) => request.willing_to_test
+  ).length;
 
   const assetCounts = countAssets(requests);
   const majorCounts = countByField(requests, "current_major");
+  const sourceCounts = countByField(requests, "source_page");
+  const assetIntentCounts = countByField(requests, "asset_intent");
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -118,7 +122,7 @@ export default async function AdminRequestsPage({
             </h1>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-              这里用于查看 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、主要痛点和是否愿意参与早期测试。
+              这里用于查看 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点和是否愿意参与早期测试。
             </p>
           </div>
 
@@ -151,6 +155,8 @@ export default async function AdminRequestsPage({
         <div className="mb-8 grid gap-5 md:grid-cols-2">
           <SummaryCard title="资产方向统计" items={assetCounts} />
           <SummaryCard title="专业方向统计" items={majorCounts} />
+          <SummaryCard title="来源页面统计" items={sourceCounts} />
+          <SummaryCard title="资产意向统计" items={assetIntentCounts} />
         </div>
 
         <div className="space-y-5">
@@ -232,6 +238,7 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
         <div className="flex flex-wrap gap-2">
           <Tag>{request.current_major}</Tag>
           {request.current_year ? <Tag>{request.current_year}</Tag> : null}
+          {request.asset_intent ? <Tag>{request.asset_intent}</Tag> : null}
           {request.willing_to_test ? <Tag>愿意早期测试</Tag> : null}
         </div>
       </div>
@@ -251,6 +258,8 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
               : "未选择"
           }
         />
+        <InfoBlock title="来源页面" body={request.source_page || "未记录"} />
+        <InfoBlock title="资产意向" body={request.asset_intent || "未记录"} />
       </div>
 
       <div className="mt-5 rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
@@ -296,7 +305,10 @@ function countAssets(requests: MajorProofRequest[]) {
 
 function countByField(
   requests: MajorProofRequest[],
-  field: keyof Pick<MajorProofRequest, "current_major">
+  field: keyof Pick<
+    MajorProofRequest,
+    "current_major" | "source_page" | "asset_intent"
+  >
 ) {
   const counts = new Map<string, number>();
 

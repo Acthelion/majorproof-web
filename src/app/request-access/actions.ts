@@ -16,6 +16,9 @@ export async function submitAccessRequest(formData: FormData) {
 
   const locale = String(formData.get("locale") || "zh").trim();
 
+  const sourcePage = String(formData.get("sourcePage") || "").trim();
+  const assetIntent = String(formData.get("assetIntent") || "").trim();
+
   const interestedAssets = formData
     .getAll("interestedAssets")
     .map((value) => String(value).trim())
@@ -45,6 +48,8 @@ export async function submitAccessRequest(formData: FormData) {
     primary_need: primaryNeed,
     language_preference: languagePreference,
     willing_to_test: willingToTest,
+    source_page: sourcePage || null,
+    asset_intent: assetIntent || null,
   });
 
   if (error) {

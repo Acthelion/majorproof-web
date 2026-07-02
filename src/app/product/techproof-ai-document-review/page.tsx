@@ -2,6 +2,9 @@ import PublicFooter from "@/components/PublicFooter";
 import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 
+const requestHref =
+  "/request-access?asset=TechProof&source=techproof-product";
+
 export default function TechProofProductPage() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -27,7 +30,7 @@ export default function TechProofProductPage() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="/request-access"
+              href={requestHref}
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
               申请早期访问
@@ -247,7 +250,7 @@ export default function TechProofProductPage() {
               <PriceRow title="完整项目路线与面试防守" price="¥299 起" />
 
               <a
-                href="/request-access"
+                href={requestHref}
                 className="mt-6 block rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
               >
                 申请早期访问
@@ -257,7 +260,11 @@ export default function TechProofProductPage() {
         </div>
       </section>
 
-      <RequestAccessCTA locale="zh" />
+      <RequestAccessCTA
+        locale="zh"
+        sourcePage="techproof-product-bottom"
+        assetIntent="TechProof"
+      />
 
       <PublicFooter locale="zh" />
     </main>

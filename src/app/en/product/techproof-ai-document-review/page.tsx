@@ -2,6 +2,9 @@ import PublicFooter from "@/components/PublicFooter";
 import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 
+const requestHref =
+  "/en/request-access?asset=TechProof&source=techproof-product-en";
+
 export default function EnglishTechProofProductPage() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -34,7 +37,7 @@ export default function EnglishTechProofProductPage() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="/en/request-access"
+              href={requestHref}
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
               Request Early Access
@@ -265,10 +268,13 @@ export default function EnglishTechProofProductPage() {
             <div className="space-y-4">
               <PriceRow title="Early single asset pack" price="¥29–69" />
               <PriceRow title="TechProof category pack" price="¥99–199" />
-              <PriceRow title="Full project roadmap and interview defense" price="From ¥299" />
+              <PriceRow
+                title="Full project roadmap and interview defense"
+                price="From ¥299"
+              />
 
               <a
-                href="/en/request-access"
+                href={requestHref}
                 className="mt-6 block rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
               >
                 Request Early Access
@@ -278,7 +284,11 @@ export default function EnglishTechProofProductPage() {
         </div>
       </section>
 
-      <RequestAccessCTA locale="en" />
+      <RequestAccessCTA
+        locale="en"
+        sourcePage="techproof-product-bottom-en"
+        assetIntent="TechProof"
+      />
 
       <PublicFooter locale="en" />
     </main>

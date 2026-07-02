@@ -1,9 +1,21 @@
 type RequestAccessCTAProps = {
   locale: "zh" | "en";
+  sourcePage?: string;
+  assetIntent?: string;
 };
 
-export default function RequestAccessCTA({ locale }: RequestAccessCTAProps) {
+export default function RequestAccessCTA({
+  locale,
+  sourcePage,
+  assetIntent,
+}: RequestAccessCTAProps) {
   const isZh = locale === "zh";
+
+  const requestHref = buildRequestHref({
+    locale,
+    sourcePage: sourcePage || (isZh ? "generic-cta-zh" : "generic-cta-en"),
+    assetIntent,
+  });
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-20">
@@ -29,7 +41,7 @@ export default function RequestAccessCTA({ locale }: RequestAccessCTAProps) {
 
           <div className="flex flex-col gap-4">
             <a
-              href={isZh ? "/request-access" : "/en/request-access"}
+              href={requestHref}
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
               {isZh ? "申请早期访问" : "Request Early Access"}
@@ -46,4 +58,29 @@ export default function RequestAccessCTA({ locale }: RequestAccessCTAProps) {
       </div>
     </section>
   );
+}
+
+function buildRequestHref({
+  locale,
+  sourcePage,
+  assetIntent,
+}: {
+  locale: "zh" | "en";
+  sourcePage?: string;
+  assetIntent?: string;
+}) {
+  const baseHref = locale === "zh" ? "/request-access" : "/en/request-access";
+  const params = new URLSearchParams();
+
+  if (sourcePage) {
+    params.set("source", sourcePage);
+  }
+
+  if (assetIntent) {
+    params.set("asset", assetIntent);
+  }
+
+  const query = params.toString();
+
+  return query ? `${baseHref}?${query}` : baseHref;
 }
