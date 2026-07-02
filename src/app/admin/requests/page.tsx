@@ -1,11 +1,18 @@
 import PublicFooter from "@/components/PublicFooter";
 import SiteNav from "@/components/SiteNav";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { isAdminAuthenticated, loginAdmin, logoutAdmin } from "./actions";
+import {
+  isAdminAuthenticated,
+  loginAdmin,
+  logoutAdmin,
+  updateRequestStatus,
+} from "./actions";
 
 type SearchParams = Promise<{
   error?: string;
 }>;
+
+type RequestStatus = "new" | "contacted" | "qualified" | "not_fit" | "closed";
 
 type MajorProofRequest = {
   id: string;
@@ -20,8 +27,19 @@ type MajorProofRequest = {
   willing_to_test: boolean;
   source_page: string | null;
   asset_intent: string | null;
+  status: RequestStatus | null;
+  admin_note: string | null;
   created_at: string;
+  updated_at: string | null;
 };
+
+const statusOptions: { value: RequestStatus; label: string }[] = [
+  { value: "new", label: "新申请" },
+  { value: "contacted", label: "已联系" },
+  { value: "qualified", label: "高意向" },
+  { value: "not_fit", label: "暂不匹配" },
+  { value: "closed", label: "已关闭" },
+];
 
 export default async function AdminRequestsPage({
   searchParams,
@@ -49,9 +67,7 @@ export default async function AdminRequestsPage({
 
           {resolvedSearchParams.error ? (
             <div className="mt-8 rounded-2xl border border-red-900/60 bg-red-950/40 p-4 text-sm leading-6 text-red-200">
-              {resolvedSearchParams.error === "wrong-password"
-                ? "密码错误，请重新输入。"
-                : "请输入后台密码。"}
+              {getAdminErrorMessage(resolvedSearchParams.error)}
             </div>
           ) : null}
 
@@ -90,7 +106,7 @@ export default async function AdminRequestsPage({
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, created_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, status, admin_note, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
 
@@ -105,6 +121,7 @@ export default async function AdminRequestsPage({
   const majorCounts = countByField(requests, "current_major");
   const sourceCounts = countByField(requests, "source_page");
   const assetIntentCounts = countByField(requests, "asset_intent");
+  const statusCounts = countStatuses(requests);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -122,7 +139,7 @@ export default async function AdminRequestsPage({
             </h1>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-              这里用于查看 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点和是否愿意参与早期测试。
+              这里用于查看和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点、用户意向和后续跟进状态。
             </p>
           </div>
 
@@ -136,6 +153,15 @@ export default async function AdminRequestsPage({
           </form>
         </div>
 
+        {resolvedSearchParams.error ? (
+          <div className="mb-8 rounded-3xl border border-red-900/60 bg-red-950/40 p-6 text-red-200">
+            <h2 className="mb-3 text-2xl font-semibold">后台操作失败</h2>
+            <p className="leading-7">
+              {getAdminErrorMessage(resolvedSearchParams.error)}
+            </p>
+          </div>
+        ) : null}
+
         {error ? (
           <div className="mb-8 rounded-3xl border border-red-900/60 bg-red-950/40 p-6 text-red-200">
             <h2 className="mb-3 text-2xl font-semibold">读取数据失败</h2>
@@ -143,9 +169,16 @@ export default async function AdminRequestsPage({
           </div>
         ) : null}
 
-        <div className="mb-8 grid gap-5 md:grid-cols-3">
+        <div className="mb-8 grid gap-5 md:grid-cols-4">
           <StatCard title="总申请数" value={String(total)} />
           <StatCard title="愿意早期测试" value={String(willingToTestCount)} />
+          <StatCard
+            title="高意向用户"
+            value={String(
+              requests.filter((request) => request.status === "qualified")
+                .length
+            )}
+          />
           <StatCard
             title="最近提交"
             value={requests[0] ? formatDate(requests[0].created_at) : "暂无"}
@@ -153,6 +186,7 @@ export default async function AdminRequestsPage({
         </div>
 
         <div className="mb-8 grid gap-5 md:grid-cols-2">
+          <SummaryCard title="状态统计" items={statusCounts} />
           <SummaryCard title="资产方向统计" items={assetCounts} />
           <SummaryCard title="专业方向统计" items={majorCounts} />
           <SummaryCard title="来源页面统计" items={sourceCounts} />
@@ -222,6 +256,8 @@ function SummaryCard({
 }
 
 function RequestCard({ request }: { request: MajorProofRequest }) {
+  const status = request.status || "new";
+
   return (
     <article className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6">
       <div className="mb-6 flex flex-col gap-4 border-b border-neutral-800 pb-5 md:flex-row md:items-start md:justify-between">
@@ -231,11 +267,18 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
           </h2>
 
           <p className="mt-2 text-sm text-neutral-500">
-            {formatDateTime(request.created_at)}
+            提交时间：{formatDateTime(request.created_at)}
           </p>
+
+          {request.updated_at ? (
+            <p className="mt-1 text-sm text-neutral-600">
+              更新时间：{formatDateTime(request.updated_at)}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <StatusTag status={status} />
           <Tag>{request.current_major}</Tag>
           {request.current_year ? <Tag>{request.current_year}</Tag> : null}
           {request.asset_intent ? <Tag>{request.asset_intent}</Tag> : null}
@@ -268,6 +311,54 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
           {request.primary_need}
         </p>
       </div>
+
+      <form
+        action={updateRequestStatus}
+        className="mt-5 rounded-2xl border border-neutral-800 bg-neutral-950 p-5"
+      >
+        <input type="hidden" name="requestId" value={request.id} />
+
+        <div className="grid gap-5 md:grid-cols-[0.35fr_0.65fr]">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-neutral-300">
+              跟进状态
+            </span>
+
+            <select
+              name="status"
+              defaultValue={status}
+              className="w-full rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-neutral-100 outline-none transition focus:border-neutral-500"
+            >
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-neutral-300">
+              后台备注
+            </span>
+
+            <textarea
+              name="adminNote"
+              defaultValue={request.admin_note || ""}
+              rows={4}
+              placeholder="例如：EE 大二，TechProof，高意向，适合第一批访谈"
+              className="w-full resize-none rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-neutral-500"
+            />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className="mt-5 rounded-full bg-neutral-100 px-6 py-3 text-sm font-medium text-neutral-950 transition hover:bg-white"
+        >
+          保存跟进状态
+        </button>
+      </form>
     </article>
   );
 }
@@ -285,6 +376,14 @@ function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="rounded-full border border-neutral-700 px-3 py-1 text-sm text-neutral-300">
       {children}
+    </span>
+  );
+}
+
+function StatusTag({ status }: { status: RequestStatus }) {
+  return (
+    <span className="rounded-full border border-neutral-600 bg-neutral-100 px-3 py-1 text-sm font-medium text-neutral-950">
+      {getStatusLabel(status)}
     </span>
   );
 }
@@ -325,6 +424,53 @@ function countByField(
   return [...counts.entries()]
     .map(([label, count]) => ({ label, count }))
     .sort((a, b) => b.count - a.count);
+}
+
+function countStatuses(requests: MajorProofRequest[]) {
+  const counts = new Map<string, number>();
+
+  for (const request of requests) {
+    const status = request.status || "new";
+    counts.set(getStatusLabel(status), (counts.get(getStatusLabel(status)) || 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function getStatusLabel(status: RequestStatus) {
+  const matched = statusOptions.find((option) => option.value === status);
+
+  return matched?.label || "新申请";
+}
+
+function getAdminErrorMessage(error: string) {
+  if (error === "wrong-password") {
+    return "密码错误，请重新输入。";
+  }
+
+  if (error === "missing-password") {
+    return "请输入后台密码。";
+  }
+
+  if (error === "unauthorized") {
+    return "后台登录状态已失效，请重新登录。";
+  }
+
+  if (error === "missing-request-id") {
+    return "缺少申请记录 ID，无法更新。";
+  }
+
+  if (error === "invalid-status") {
+    return "跟进状态无效，请重新选择。";
+  }
+
+  if (error === "update-failed") {
+    return "保存失败，请检查 Supabase 字段是否已经创建。";
+  }
+
+  return "操作失败，请稍后重试。";
 }
 
 function formatDate(value: string) {
