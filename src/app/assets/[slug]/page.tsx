@@ -24,6 +24,8 @@ export default async function AssetDetailPage({ params }: AssetDetailPageProps) 
     notFound();
   }
 
+  const hasProductPage = asset.slug === "ai-document-review-platform";
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <SiteNav locale="zh" />
@@ -49,7 +51,25 @@ export default async function AssetDetailPage({ params }: AssetDetailPageProps) 
             {asset.zhSubtitle}
           </p>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-[1fr_1.2fr]">
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            {hasProductPage ? (
+              <a
+                href="/product/techproof-ai-document-review"
+                className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
+              >
+                查看产品页
+              </a>
+            ) : null}
+
+            <a
+              href="/request-access"
+              className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              申请早期访问
+            </a>
+          </div>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-[1fr_1.2fr]">
             <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
               <p className="mb-2 text-sm text-neutral-500">适用对象</p>
               <p className="text-neutral-200">{asset.zhAudience}</p>
