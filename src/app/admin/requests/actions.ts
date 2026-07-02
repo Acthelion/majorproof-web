@@ -82,22 +82,28 @@ export async function updateRequestStatus(formData: FormData) {
     redirect("/admin/requests?error=invalid-status");
   }
 
-  const { error } = await supabaseAdmin
-    .from("majorproof_requests")
-    .update({
-      status,
-      admin_note: adminNote || null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", requestId);
+  try {
+    const { error } = await supabaseAdmin
+      .from("majorproof_requests")
+      .update({
+        status,
+        admin_note: adminNote || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
 
-  if (error) {
-    console.error("Failed to update request status:", {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    });
+    if (error) {
+      console.error("Failed to update request status:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+
+      redirect("/admin/requests?error=update-failed");
+    }
+  } catch (error) {
+    console.error("Unexpected update request status error:", error);
 
     redirect("/admin/requests?error=update-failed");
   }
@@ -118,7 +124,7 @@ export async function generateAiAnalysis(formData: FormData) {
     redirect("/admin/requests?error=missing-request-id");
   }
 
-  const client = getOpenAIClient();
+  const client = await getOpenAIClient();
 
   if (!client) {
     redirect("/admin/requests?error=missing-openai-key");
@@ -171,25 +177,31 @@ export async function generateAiAnalysis(formData: FormData) {
     redirect("/admin/requests?error=ai-generate-failed");
   }
 
-  const { error: updateError } = await supabaseAdmin
-    .from("majorproof_requests")
-    .update({
-      ai_analysis: aiResult.analysis,
-      ai_intent_level: aiResult.intentLevel,
-      ai_recommended_asset: aiResult.recommendedAsset,
-      ai_followup_message: aiResult.followupMessage,
-      ai_analyzed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", requestId);
+  try {
+    const { error: updateError } = await supabaseAdmin
+      .from("majorproof_requests")
+      .update({
+        ai_analysis: aiResult.analysis,
+        ai_intent_level: aiResult.intentLevel,
+        ai_recommended_asset: aiResult.recommendedAsset,
+        ai_followup_message: aiResult.followupMessage,
+        ai_analyzed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
 
-  if (updateError) {
-    console.error("Failed to save AI analysis:", {
-      message: updateError.message,
-      code: updateError.code,
-      details: updateError.details,
-      hint: updateError.hint,
-    });
+    if (updateError) {
+      console.error("Failed to save AI analysis:", {
+        message: updateError.message,
+        code: updateError.code,
+        details: updateError.details,
+        hint: updateError.hint,
+      });
+
+      redirect("/admin/requests?error=ai-save-failed");
+    }
+  } catch (error) {
+    console.error("Unexpected AI save error:", error);
 
     redirect("/admin/requests?error=ai-save-failed");
   }

@@ -1,13 +1,13 @@
 import "server-only";
 
-import OpenAI from "openai";
-
-export function getOpenAIClient() {
+export async function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
     return null;
   }
+
+  const { default: OpenAI } = await import("openai");
 
   return new OpenAI({
     apiKey,
