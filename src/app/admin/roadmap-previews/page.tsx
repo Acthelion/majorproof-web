@@ -8,6 +8,10 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
 
+type PageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
 type RoadmapPreview = {
   id: string;
   name_or_alias: string | null;
@@ -19,20 +23,29 @@ type RoadmapPreview = {
   existing_experience: string | null;
   primary_need: string;
   ai_result: string;
+  converted_request_id: string | null;
+  converted_at: string | null;
   created_at: string;
 };
 
-export default async function AdminRoadmapPreviewsPage() {
+export default async function AdminRoadmapPreviewsPage({
+  searchParams,
+}: PageProps) {
   const authenticated = await isAdminAuthenticated();
 
   if (!authenticated) {
     return <AdminLogin />;
   }
 
+  const resolvedSearchParams = await searchParams;
+  const errorMessage = getErrorMessage(
+    getSearchParam(resolvedSearchParams, "error")
+  );
+
   const { data, error } = await supabaseAdmin
     .from("majorproof_ai_roadmap_previews")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_asset, existing_experience, primary_need, ai_result, created_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_asset, existing_experience, primary_need, ai_result, converted_request_id, converted_at, created_at"
     )
     .order("created_at", { ascending: false })
     .limit(50);
@@ -51,8 +64,8 @@ export default async function AdminRoadmapPreviewsPage() {
               AI Roadmap Previews
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-neutral-300">
-              Review controlled AI roadmap preview submissions and identify
-              users who may be worth converting into formal access requests.
+              Review controlled AI roadmap preview submissions and convert
+              high-fit users into the formal request CRM.
             </p>
           </div>
 
@@ -89,6 +102,12 @@ export default async function AdminRoadmapPreviewsPage() {
           </div>
         </header>
 
+        {errorMessage ? (
+          <div className="mb-8 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">
+            {errorMessage}
+          </div>
+        ) : null}
+
         {error ? (
           <div className="mb-8 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">
             Failed to load roadmap previews: {error.message}
@@ -98,11 +117,9 @@ export default async function AdminRoadmapPreviewsPage() {
         <section className="mb-8 grid gap-4 md:grid-cols-4">
           <StatCard title="Total shown" value={String(previews.length)} />
           <StatCard
-            title="TechProof"
+            title="Converted"
             value={String(
-              previews.filter(
-                (preview) => preview.interested_asset === "TechProof"
-              ).length
+              previews.filter((preview) => preview.converted_request_id).length
             )}
           />
           <StatCard
@@ -113,9 +130,11 @@ export default async function AdminRoadmapPreviewsPage() {
             )}
           />
           <StatCard
-            title="No asset selected"
+            title="TechProof"
             value={String(
-              previews.filter((preview) => !preview.interested_asset).length
+              previews.filter(
+                (preview) => preview.interested_asset === "TechProof"
+              ).length
             )}
           />
         </section>
@@ -195,6 +214,11 @@ function PreviewCard({ preview }: { preview: RoadmapPreview }) {
           <Tag text={preview.interested_asset || "No asset selected"} />
           <Tag text={preview.current_major} />
           <Tag text={preview.current_year || "Year not provided"} />
+          {preview.converted_request_id ? (
+            <Tag text="Converted" />
+          ) : (
+            <Tag text="Not converted" />
+          )}
         </div>
       </div>
 
@@ -227,6 +251,25 @@ function PreviewCard({ preview }: { preview: RoadmapPreview }) {
         >
           Open public result
         </Link>
+
+        {preview.converted_request_id ? (
+          <Link
+            href="/admin/requests"
+            className="rounded-2xl border border-emerald-500/50 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-100 transition hover:border-emerald-300"
+          >
+            Already converted
+          </Link>
+        ) : (
+          <form method="post" action="/admin/roadmap-previews/convert">
+            <input type="hidden" name="previewId" value={preview.id} />
+            <button
+              type="submit"
+              className="rounded-2xl bg-amber-300 px-4 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-amber-200"
+            >
+              Convert to request CRM
+            </button>
+          </form>
+        )}
       </div>
     </article>
   );
@@ -258,6 +301,39 @@ function Tag({ text }: { text: string }) {
       {text}
     </span>
   );
+}
+
+function getSearchParam(
+  searchParams: Record<string, string | string[] | undefined> | undefined,
+  key: string
+) {
+  const value = searchParams?.[key];
+
+  if (Array.isArray(value)) {
+    return value[0] || "";
+  }
+
+  return value || "";
+}
+
+function getErrorMessage(error: string) {
+  if (error === "unauthorized") {
+    return "You are not authorized. Please log in again.";
+  }
+
+  if (error === "missing-preview-id") {
+    return "Conversion failed because preview id is missing.";
+  }
+
+  if (error === "preview-read-failed") {
+    return "Conversion failed because the roadmap preview could not be read.";
+  }
+
+  if (error === "convert-failed") {
+    return "Conversion failed. Please check server logs.";
+  }
+
+  return "";
 }
 
 function formatDate(value: string) {
