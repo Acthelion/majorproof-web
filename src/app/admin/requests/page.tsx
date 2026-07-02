@@ -1,5 +1,11 @@
+import type { ReactNode } from "react";
 import PublicFooter from "@/components/PublicFooter";
 import SiteNav from "@/components/SiteNav";
+import {
+  getStatusLabel,
+  statusOptions,
+  type RequestStatus,
+} from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import {
   isAdminAuthenticated,
@@ -10,9 +16,11 @@ import {
 
 type SearchParams = Promise<{
   error?: string;
+  status?: string;
+  asset?: string;
+  source?: string;
+  q?: string;
 }>;
-
-type RequestStatus = "new" | "contacted" | "qualified" | "not_fit" | "closed";
 
 type MajorProofRequest = {
   id: string;
@@ -33,13 +41,12 @@ type MajorProofRequest = {
   updated_at: string | null;
 };
 
-const statusOptions: { value: RequestStatus; label: string }[] = [
-  { value: "new", label: "新申请" },
-  { value: "contacted", label: "已联系" },
-  { value: "qualified", label: "高意向" },
-  { value: "not_fit", label: "暂不匹配" },
-  { value: "closed", label: "已关闭" },
-];
+type FilterState = {
+  status: string;
+  asset: string;
+  source: string;
+  q: string;
+};
 
 export default async function AdminRequestsPage({
   searchParams,
@@ -110,18 +117,34 @@ export default async function AdminRequestsPage({
     )
     .order("created_at", { ascending: false });
 
-  const requests = (data || []) as MajorProofRequest[];
+  const allRequests = (data || []) as MajorProofRequest[];
 
-  const total = requests.length;
+  const filters: FilterState = {
+    status: resolvedSearchParams.status || "all",
+    asset: resolvedSearchParams.asset || "all",
+    source: resolvedSearchParams.source || "all",
+    q: resolvedSearchParams.q || "",
+  };
+
+  const requests = filterRequests(allRequests, filters);
+
+  const total = allRequests.length;
+  const filteredTotal = requests.length;
   const willingToTestCount = requests.filter(
     (request) => request.willing_to_test
   ).length;
+
+  const assetOptions = getAssetOptions(allRequests);
+  const sourceOptions = getSourceOptions(allRequests);
 
   const assetCounts = countAssets(requests);
   const majorCounts = countByField(requests, "current_major");
   const sourceCounts = countByField(requests, "source_page");
   const assetIntentCounts = countByField(requests, "asset_intent");
   const statusCounts = countStatuses(requests);
+
+  const exportHref = buildExportHref(filters);
+  const hasActiveFilters = hasFilters(filters);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -139,7 +162,7 @@ export default async function AdminRequestsPage({
             </h1>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-              这里用于查看和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点、用户意向和后续跟进状态。
+              这里用于查看、筛选、导出和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点、用户意向和后续跟进状态。
             </p>
           </div>
 
@@ -169,8 +192,19 @@ export default async function AdminRequestsPage({
           </div>
         ) : null}
 
+        <FilterPanel
+          filters={filters}
+          assetOptions={assetOptions}
+          sourceOptions={sourceOptions}
+          exportHref={exportHref}
+          hasActiveFilters={hasActiveFilters}
+        />
+
         <div className="mb-8 grid gap-5 md:grid-cols-4">
-          <StatCard title="总申请数" value={String(total)} />
+          <StatCard
+            title="当前筛选结果"
+            value={`${filteredTotal} / ${total}`}
+          />
           <StatCard title="愿意早期测试" value={String(willingToTestCount)} />
           <StatCard
             title="高意向用户"
@@ -196,9 +230,9 @@ export default async function AdminRequestsPage({
         <div className="space-y-5">
           {requests.length === 0 ? (
             <div className="rounded-3xl border border-neutral-800 bg-neutral-900 p-8">
-              <h2 className="text-2xl font-semibold">暂无申请数据</h2>
+              <h2 className="text-2xl font-semibold">没有匹配的申请数据</h2>
               <p className="mt-3 leading-7 text-neutral-400">
-                当用户提交 request-access 表单后，数据会显示在这里。
+                可以调整筛选条件，或者清空筛选后查看全部申请。
               </p>
             </div>
           ) : (
@@ -211,6 +245,135 @@ export default async function AdminRequestsPage({
 
       <PublicFooter locale="zh" />
     </main>
+  );
+}
+function FilterPanel({
+  filters,
+  assetOptions,
+  sourceOptions,
+  exportHref,
+  hasActiveFilters,
+}: {
+  filters: FilterState;
+  assetOptions: string[];
+  sourceOptions: string[];
+  exportHref: string;
+  hasActiveFilters: boolean;
+}) {
+  return (
+    <div className="mb-8 rounded-3xl border border-neutral-800 bg-neutral-900 p-6">
+      <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold">筛选和导出</h2>
+          <p className="mt-2 leading-7 text-neutral-400">
+            用状态、资产、来源和关键词快速定位高价值申请，也可以导出当前筛选结果。
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {hasActiveFilters ? (
+            <a
+              href="/admin/requests"
+              className="rounded-full border border-neutral-700 px-5 py-3 text-center text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              清空筛选
+            </a>
+          ) : null}
+
+          <a
+            href={exportHref}
+            className="rounded-full bg-neutral-100 px-5 py-3 text-center text-sm font-medium text-neutral-950 transition hover:bg-white"
+          >
+            导出 CSV
+          </a>
+        </div>
+      </div>
+
+      <form
+        method="get"
+        action="/admin/requests"
+        className="grid gap-4 md:grid-cols-4"
+      >
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-neutral-300">
+            跟进状态
+          </span>
+
+          <select
+            name="status"
+            defaultValue={filters.status}
+            className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition focus:border-neutral-500"
+          >
+            <option value="all">全部状态</option>
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-neutral-300">
+            资产方向
+          </span>
+
+          <select
+            name="asset"
+            defaultValue={filters.asset}
+            className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition focus:border-neutral-500"
+          >
+            <option value="all">全部资产</option>
+            {assetOptions.map((asset) => (
+              <option key={asset} value={asset}>
+                {asset}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-neutral-300">
+            来源页面
+          </span>
+
+          <select
+            name="source"
+            defaultValue={filters.source}
+            className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition focus:border-neutral-500"
+          >
+            <option value="all">全部来源</option>
+            {sourceOptions.map((source) => (
+              <option key={source} value={source}>
+                {source}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-neutral-300">
+            关键词
+          </span>
+
+          <input
+            name="q"
+            defaultValue={filters.q}
+            placeholder="专业、需求、联系方式、备注"
+            className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-neutral-500"
+          />
+        </label>
+
+        <div className="md:col-span-4">
+          <button
+            type="submit"
+            className="rounded-full bg-neutral-100 px-6 py-3 text-sm font-medium text-neutral-950 transition hover:bg-white"
+          >
+            应用筛选
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -362,7 +525,6 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
     </article>
   );
 }
-
 function InfoBlock({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
@@ -372,7 +534,7 @@ function InfoBlock({ title, body }: { title: string; body: string }) {
   );
 }
 
-function Tag({ children }: { children: React.ReactNode }) {
+function Tag({ children }: { children: ReactNode }) {
   return (
     <span className="rounded-full border border-neutral-700 px-3 py-1 text-sm text-neutral-300">
       {children}
@@ -386,6 +548,61 @@ function StatusTag({ status }: { status: RequestStatus }) {
       {getStatusLabel(status)}
     </span>
   );
+}
+
+function filterRequests(
+  requests: MajorProofRequest[],
+  filters: FilterState
+) {
+  const query = filters.q.trim().toLowerCase();
+
+  return requests.filter((request) => {
+    const requestStatus = request.status || "new";
+
+    if (filters.status !== "all" && requestStatus !== filters.status) {
+      return false;
+    }
+
+    if (filters.asset !== "all") {
+      const interestedAssets = request.interested_assets || [];
+      const assetMatches =
+        request.asset_intent === filters.asset ||
+        interestedAssets.includes(filters.asset);
+
+      if (!assetMatches) {
+        return false;
+      }
+    }
+
+    if (filters.source !== "all" && request.source_page !== filters.source) {
+      return false;
+    }
+
+    if (query) {
+      const searchableText = [
+        request.name_or_alias,
+        request.contact_method,
+        request.current_major,
+        request.current_year,
+        request.target_goal,
+        request.primary_need,
+        request.language_preference,
+        request.source_page,
+        request.asset_intent,
+        request.admin_note,
+        ...(request.interested_assets || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      if (!searchableText.includes(query)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 }
 
 function countAssets(requests: MajorProofRequest[]) {
@@ -431,7 +648,9 @@ function countStatuses(requests: MajorProofRequest[]) {
 
   for (const request of requests) {
     const status = request.status || "new";
-    counts.set(getStatusLabel(status), (counts.get(getStatusLabel(status)) || 0) + 1);
+    const label = getStatusLabel(status);
+
+    counts.set(label, (counts.get(label) || 0) + 1);
   }
 
   return [...counts.entries()]
@@ -439,10 +658,67 @@ function countStatuses(requests: MajorProofRequest[]) {
     .sort((a, b) => b.count - a.count);
 }
 
-function getStatusLabel(status: RequestStatus) {
-  const matched = statusOptions.find((option) => option.value === status);
+function getAssetOptions(requests: MajorProofRequest[]) {
+  const values = new Set<string>();
 
-  return matched?.label || "新申请";
+  for (const request of requests) {
+    if (request.asset_intent) {
+      values.add(request.asset_intent);
+    }
+
+    for (const asset of request.interested_assets || []) {
+      values.add(asset);
+    }
+  }
+
+  return [...values].sort();
+}
+
+function getSourceOptions(requests: MajorProofRequest[]) {
+  const values = new Set<string>();
+
+  for (const request of requests) {
+    if (request.source_page) {
+      values.add(request.source_page);
+    }
+  }
+
+  return [...values].sort();
+}
+
+function hasFilters(filters: FilterState) {
+  return (
+    filters.status !== "all" ||
+    filters.asset !== "all" ||
+    filters.source !== "all" ||
+    Boolean(filters.q.trim())
+  );
+}
+
+function buildExportHref(filters: FilterState) {
+  const params = new URLSearchParams();
+
+  if (filters.status !== "all") {
+    params.set("status", filters.status);
+  }
+
+  if (filters.asset !== "all") {
+    params.set("asset", filters.asset);
+  }
+
+  if (filters.source !== "all") {
+    params.set("source", filters.source);
+  }
+
+  if (filters.q.trim()) {
+    params.set("q", filters.q.trim());
+  }
+
+  const query = params.toString();
+
+  return query
+    ? `/admin/requests/export?${query}`
+    : "/admin/requests/export";
 }
 
 function getAdminErrorMessage(error: string) {

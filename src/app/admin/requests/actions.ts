@@ -1,23 +1,15 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  allowedStatuses,
+  clearAdminAuthCookie,
+  isAdminAuthenticated,
+  setAdminAuthCookie,
+} from "@/lib/adminAuth";
 
-const ADMIN_COOKIE_NAME = "majorproof_admin_auth";
-
-const allowedStatuses = ["new", "contacted", "qualified", "not_fit", "closed"];
-
-function getAdminPasswordHash() {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (!adminPassword) {
-    throw new Error("Missing ADMIN_PASSWORD");
-  }
-
-  return crypto.createHash("sha256").update(adminPassword).digest("hex");
-}
+export { isAdminAuthenticated };
 
 export async function loginAdmin(formData: FormData) {
   const password = String(formData.get("password") || "").trim();
@@ -26,47 +18,19 @@ export async function loginAdmin(formData: FormData) {
     redirect("/admin/requests?error=missing-password");
   }
 
-  const submittedHash = crypto
-    .createHash("sha256")
-    .update(password)
-    .digest("hex");
+  const authenticated = await setAdminAuthCookie(password);
 
-  const correctHash = getAdminPasswordHash();
-
-  if (submittedHash !== correctHash) {
+  if (!authenticated) {
     redirect("/admin/requests?error=wrong-password");
   }
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(ADMIN_COOKIE_NAME, submittedHash, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/admin",
-    maxAge: 60 * 60 * 12,
-  });
 
   redirect("/admin/requests");
 }
 
 export async function logoutAdmin() {
-  const cookieStore = await cookies();
-
-  cookieStore.delete(ADMIN_COOKIE_NAME);
+  await clearAdminAuthCookie();
 
   redirect("/admin/requests");
-}
-
-export async function isAdminAuthenticated() {
-  const cookieStore = await cookies();
-  const authCookie = cookieStore.get(ADMIN_COOKIE_NAME);
-
-  if (!authCookie?.value) {
-    return false;
-  }
-
-  return authCookie.value === getAdminPasswordHash();
 }
 
 export async function updateRequestStatus(formData: FormData) {
@@ -84,7 +48,7 @@ export async function updateRequestStatus(formData: FormData) {
     redirect("/admin/requests?error=missing-request-id");
   }
 
-  if (!allowedStatuses.includes(status)) {
+  if (!allowedStatuses.includes(status as (typeof allowedStatuses)[number])) {
     redirect("/admin/requests?error=invalid-status");
   }
 
