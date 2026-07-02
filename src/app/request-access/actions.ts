@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function submitAccessRequest(formData: FormData) {
   const nameOrAlias = String(formData.get("nameOrAlias") || "").trim();
@@ -19,6 +19,14 @@ export async function submitAccessRequest(formData: FormData) {
   const sourcePage = String(formData.get("sourcePage") || "").trim();
   const assetIntent = String(formData.get("assetIntent") || "").trim();
 
+  const purchaseIntent = String(
+    formData.get("purchaseIntent") || ""
+  ).trim();
+
+  const expectedPriceRange = String(
+    formData.get("expectedPriceRange") || ""
+  ).trim();
+
   const interestedAssets = formData
     .getAll("interestedAssets")
     .map((value) => String(value).trim())
@@ -35,31 +43,44 @@ export async function submitAccessRequest(formData: FormData) {
     .map(([field]) => field);
 
   if (missingFields.length > 0) {
-    throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+    const errorPath =
+      locale === "en"
+        ? "/en/request-access?error=missing-fields"
+        : "/request-access?error=missing-fields";
+
+    redirect(errorPath);
   }
 
-  const { error } = await supabase.from("majorproof_requests").insert({
-    name_or_alias: nameOrAlias,
+  const { error } = await supabaseAdmin.from("majorproof_requests").insert({
+    name_or_alias: nameOrAlias || null,
     contact_method: contactMethod,
     current_major: currentMajor,
-    current_year: currentYear,
-    target_goal: targetGoal,
+    current_year: currentYear || null,
+    target_goal: targetGoal || null,
     interested_assets: interestedAssets,
     primary_need: primaryNeed,
-    language_preference: languagePreference,
+    language_preference: languagePreference || null,
     willing_to_test: willingToTest,
     source_page: sourcePage || null,
     asset_intent: assetIntent || null,
+    purchase_intent: purchaseIntent || null,
+    expected_price_range: expectedPriceRange || null,
   });
 
   if (error) {
-    console.error("Supabase request insert error:", error);
+    console.error("MajorProof request insert failed:", {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    });
 
-    throw new Error(
-      `Failed to submit request: ${error.message} | ${error.code} | ${
-        error.details || ""
-      }`
-    );
+    const errorPath =
+      locale === "en"
+        ? "/en/request-access?error=submit-failed"
+        : "/request-access?error=submit-failed";
+
+    redirect(errorPath);
   }
 
   if (locale === "en") {

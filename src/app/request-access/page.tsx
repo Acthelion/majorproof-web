@@ -32,7 +32,7 @@ export default async function RequestAccessPage({
         </h1>
 
         <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-          MajorProof 当前处于产品验证阶段。你可以提交专业方向、目标场景和最需要的资产类型。
+          MajorProof 当前处于产品验证阶段。你可以提交专业方向、目标场景、最需要的资产类型和付费意向。
           我们会根据真实需求决定首批资产包的优先级。
         </p>
 
@@ -104,6 +104,34 @@ export default async function RequestAccessPage({
 
               <AssetCheckboxGroup assetIntent={assetIntent} />
 
+              <SelectField
+                label="如果这个资产包能解决你的问题，你的购买意向是"
+                name="purchaseIntent"
+                options={[
+                  "只是想了解",
+                  "愿意试用免费版本",
+                  "愿意购买低价 Starter Pack",
+                  "如果内容足够完整，愿意付费购买",
+                  "如果有个性化指导，愿意支付更高价格",
+                  "暂不确定",
+                ]}
+              />
+
+              <SelectField
+                label="你能接受的价格区间"
+                name="expectedPriceRange"
+                options={[
+                  "暂不愿意付费",
+                  "¥9–29",
+                  "¥29–69",
+                  "¥69–99",
+                  "¥99–199",
+                  "¥199–299",
+                  "¥299 以上",
+                  "看内容质量再决定",
+                ]}
+              />
+
               <TextArea
                 label="你目前最需要解决的问题"
                 name="primaryNeed"
@@ -137,18 +165,18 @@ export default async function RequestAccessPage({
 
           <aside className="space-y-5">
             <InfoCard
-              title="为什么收集这些信息"
-              body="MajorProof 需要先判断不同专业方向的真实需求强度，而不是直接建设复杂平台。早期申请信息会帮助确定首批资产包的优先级。"
+              title="为什么增加付费意向"
+              body="MajorProof 需要判断用户只是感兴趣，还是愿意为具体资产包付费。这个信息会直接影响 Starter Pack 的内容深度、价格和优先级。"
             />
 
             <InfoCard
-              title="当前不会发生什么"
-              body="提交申请不会产生付款义务，也不会自动创建账号。当前阶段主要用于需求验证和早期用户沟通。"
+              title="当前不会产生付款"
+              body="提交申请不会产生付款义务，也不会自动创建账号。当前阶段主要用于产品验证、需求判断和早期用户沟通。"
             />
 
             <InfoCard
               title="我们关注什么"
-              body="我们更关注你缺少哪类可展示成果、目标岗位或申请场景是什么、你希望资产包解决哪一类具体问题。"
+              body="我们更关注你缺少哪类可展示成果、目标岗位或申请场景是什么、你是否愿意为可执行的资产包付费。"
             />
           </aside>
         </div>
@@ -158,7 +186,6 @@ export default async function RequestAccessPage({
     </main>
   );
 }
-
 function Field({
   label,
   name,
