@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { isAdminAuthenticated, loginAdmin, logoutAdmin } from "../requests/actions";
+import {
+  isAdminAuthenticated,
+  loginAdmin,
+  logoutAdmin,
+} from "../requests/actions";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
@@ -47,7 +51,8 @@ export default async function AdminRoadmapPreviewsPage() {
               AI Roadmap Previews
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-neutral-300">
-              Review controlled AI roadmap preview submissions and identify users who may be worth converting into formal access requests.
+              Review controlled AI roadmap preview submissions and identify
+              users who may be worth converting into formal access requests.
             </p>
           </div>
 
@@ -64,6 +69,13 @@ export default async function AdminRoadmapPreviewsPage() {
               className="rounded-2xl border border-neutral-700 px-4 py-3 text-sm font-semibold text-neutral-100 transition hover:border-amber-300 hover:text-amber-200"
             >
               Preview form
+            </Link>
+
+            <Link
+              href="/admin/roadmap-previews/export"
+              className="rounded-2xl border border-neutral-700 px-4 py-3 text-sm font-semibold text-neutral-100 transition hover:border-amber-300 hover:text-amber-200"
+            >
+              Export CSV
             </Link>
 
             <form action={logoutAdmin}>
@@ -88,14 +100,16 @@ export default async function AdminRoadmapPreviewsPage() {
           <StatCard
             title="TechProof"
             value={String(
-              previews.filter((preview) => preview.interested_asset === "TechProof")
-                .length
+              previews.filter(
+                (preview) => preview.interested_asset === "TechProof"
+              ).length
             )}
           />
           <StatCard
             title="With contact"
             value={String(
-              previews.filter((preview) => Boolean(preview.contact_method)).length
+              previews.filter((preview) => Boolean(preview.contact_method))
+                .length
             )}
           />
           <StatCard
@@ -185,7 +199,10 @@ function PreviewCard({ preview }: { preview: RoadmapPreview }) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <InfoBlock title="Contact" body={preview.contact_method || "Not provided"} />
+        <InfoBlock
+          title="Contact"
+          body={preview.contact_method || "Not provided"}
+        />
         <InfoBlock title="Target goal" body={preview.target_goal} />
         <InfoBlock title="Main problem" body={preview.primary_need} />
         <InfoBlock
