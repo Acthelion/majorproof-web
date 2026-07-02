@@ -2,6 +2,9 @@ import Link from "next/link";
 import PublicFooter from "@/components/PublicFooter";
 import SiteNav from "@/components/SiteNav";
 
+const requestAccessHref =
+  "/request-access?source=techproof-starter-pack&asset=TechProof";
+
 const deliverables = [
   {
     title: "项目背景与专业场景",
@@ -97,7 +100,7 @@ export default function TechProofStarterPackPage() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/request-access"
+              href={requestAccessHref}
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
               申请付费测试
@@ -266,7 +269,7 @@ export default function TechProofStarterPackPage() {
               </Link>
 
               <Link
-                href="/request-access"
+                href={requestAccessHref}
                 className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
               >
                 申请付费测试
