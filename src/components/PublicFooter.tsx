@@ -2,93 +2,149 @@ type PublicFooterProps = {
   locale: "zh" | "en";
 };
 
+const contactEmail = "obbo199924@gmail.com";
+
 export default function PublicFooter({ locale }: PublicFooterProps) {
   const isZh = locale === "zh";
 
+  const footerCopy = isZh
+    ? {
+        brandLine: "MajorProof · 专业能力证据资产系统",
+        description:
+          "帮助大学生将课程学习、项目训练、分析能力和表达材料整理为可展示、可解释、可用于简历和面试的专业能力证据。",
+        productTitle: "产品",
+        legalTitle: "规则",
+        contactTitle: "联系",
+        home: "首页",
+        assets: "资产库",
+        requestAccess: "申请早期访问",
+        integrity: "诚信边界",
+        privacy: "隐私政策",
+        terms: "服务条款",
+        contactText: "如需测试、合作或反馈，可以通过邮箱联系。",
+        copyright: "保留所有权利",
+      }
+    : {
+        brandLine: "MajorProof · Evidence-based professional assets",
+        description:
+          "MajorProof helps students turn coursework, projects, analytical work, and professional preparation into evidence-based assets for resumes, interviews, applications, and portfolios.",
+        productTitle: "Product",
+        legalTitle: "Rules",
+        contactTitle: "Contact",
+        home: "Home",
+        assets: "Assets",
+        requestAccess: "Request access",
+        integrity: "Integrity",
+        privacy: "Privacy",
+        terms: "Terms",
+        contactText:
+          "For testing, collaboration, or feedback, contact MajorProof by email.",
+        copyright: "All rights reserved",
+      };
+
   const homeHref = isZh ? "/" : "/en";
   const assetsHref = isZh ? "/assets" : "/en/assets";
+  const requestHref = isZh ? "/request-access" : "/en/request-access";
   const integrityHref = isZh ? "/integrity" : "/en/integrity";
   const privacyHref = isZh ? "/privacy" : "/en/privacy";
   const termsHref = isZh ? "/terms" : "/en/terms";
 
   return (
     <footer className="border-t border-neutral-800 bg-neutral-950 px-6 py-12 text-neutral-400">
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.4fr_0.8fr_0.8fr_1fr]">
         <div>
-          <h2 className="mb-3 text-lg font-semibold text-neutral-100">
+          <p className="text-sm uppercase tracking-[0.25em] text-neutral-500">
             MajorProof
+          </p>
+
+          <h2 className="mt-4 text-xl font-semibold text-neutral-100">
+            {footerCopy.brandLine}
           </h2>
-          <p className="max-w-md text-sm leading-7">
-            {isZh
-              ? "MajorProof 面向大学生提供专业能力证据资产，帮助学生将课程学习、项目训练和分析能力整理为可展示、可解释、可用于简历和面试的成果。"
-              : "MajorProof develops evidence-based professional assets for students, helping them convert coursework, project practice, and analytical skills into work samples that can be presented, explained, and used in resumes or interviews."}
+
+          <p className="mt-4 max-w-md text-sm leading-7">
+            {footerCopy.description}
           </p>
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-            {isZh ? "产品" : "Product"}
-          </h3>
-          <div className="space-y-2 text-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">
+            {footerCopy.productTitle}
+          </h2>
+
+          <div className="mt-4 flex flex-col gap-3 text-sm">
             <a
-              href={`${homeHref}#categories`}
-              className="block hover:text-neutral-100"
+              href={homeHref}
+              className="transition hover:text-neutral-100"
             >
-              {isZh ? "专业方向" : "Categories"}
+              {footerCopy.home}
             </a>
+
             <a
-              href={`${homeHref}#method`}
-              className="block hover:text-neutral-100"
+              href={assetsHref}
+              className="transition hover:text-neutral-100"
             >
-              {isZh ? "资产方法" : "Asset Method"}
+              {footerCopy.assets}
             </a>
-            <a href={assetsHref} className="block hover:text-neutral-100">
-              {isZh ? "资产库" : "Assets"}
-            </a>
+
             <a
-              href={`${homeHref}#pricing`}
-              className="block hover:text-neutral-100"
+              href={requestHref}
+              className="transition hover:text-neutral-100"
             >
-              {isZh ? "价格结构" : "Pricing"}
+              {footerCopy.requestAccess}
             </a>
           </div>
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-            {isZh ? "政策" : "Policy"}
-          </h3>
-          <div className="space-y-2 text-sm">
-            <a href={integrityHref} className="block hover:text-neutral-100">
-              {isZh ? "诚信规范" : "Academic Integrity"}
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">
+            {footerCopy.legalTitle}
+          </h2>
+
+          <div className="mt-4 flex flex-col gap-3 text-sm">
+            <a
+              href={integrityHref}
+              className="transition hover:text-neutral-100"
+            >
+              {footerCopy.integrity}
             </a>
-            <a href={privacyHref} className="block hover:text-neutral-100">
-              {isZh ? "隐私说明" : "Privacy"}
+
+            <a
+              href={privacyHref}
+              className="transition hover:text-neutral-100"
+            >
+              {footerCopy.privacy}
             </a>
-            <a href={termsHref} className="block hover:text-neutral-100">
-              {isZh ? "服务条款" : "Terms"}
+
+            <a
+              href={termsHref}
+              className="transition hover:text-neutral-100"
+            >
+              {footerCopy.terms}
             </a>
           </div>
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-            Contact
-          </h3>
-          <p className="break-all text-sm leading-7">majorproof@example.com</p>
-          <p className="mt-3 text-xs leading-6 text-neutral-500">
-            {isZh
-              ? "当前版本用于产品验证和样例展示，后续将根据真实需求开放首批资产包。"
-              : "The current version is for product validation and sample presentation. Initial asset packs will be released after demand validation."}
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">
+            {footerCopy.contactTitle}
+          </h2>
+
+          <p className="mt-4 text-sm leading-7">
+            {footerCopy.contactText}
           </p>
+
+          <a
+            href={`mailto:${contactEmail}`}
+            className="mt-3 block break-all text-sm leading-7 text-neutral-200 transition hover:text-white"
+          >
+            {contactEmail}
+          </a>
         </div>
       </div>
 
-      <div className="mx-auto mt-10 max-w-7xl border-t border-neutral-800 pt-6 text-xs leading-6 text-neutral-500">
-        © {new Date().getFullYear()} MajorProof.{" "}
-        {isZh
-          ? "本服务不提供作业代写、论文代写、考试辅助作弊、经历伪造或录用结果保证。"
-          : "This service does not provide assignment completion, essay ghostwriting, exam misconduct assistance, fake experience fabrication, or guaranteed employment outcomes."}
+      <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-3 border-t border-neutral-800 pt-6 text-xs text-neutral-600 md:flex-row md:items-center md:justify-between">
+        <p>© {new Date().getFullYear()} MajorProof</p>
+        <p>{footerCopy.copyright}</p>
       </div>
     </footer>
   );
