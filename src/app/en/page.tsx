@@ -15,37 +15,45 @@ export default function EnglishHomePage() {
           </p>
 
           <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
-            Convert academic work
+            Turn coursework and projects
             <br />
-            into verifiable evidence of ability
+            into verifiable evidence
           </h1>
 
           <p className="mt-8 max-w-3xl text-xl leading-9 text-neutral-300">
-            MajorProof develops evidence-based professional assets for students.
-            It focuses on how a piece of work is produced, what ability it
-            demonstrates, whether it can be presented, and whether it can
-            withstand professional scrutiny in resumes and interviews.
+            MajorProof helps students turn coursework, project training,
+            analytical work, and career preparation into professional assets
+            that can be shown, explained, used in resumes, and defended in
+            interviews.
           </p>
 
           <p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-400">
-            Each asset is built around a concrete academic or career context. It
-            includes a final deliverable, process evidence, method explanation,
-            resume language, interview defense, and an extension roadmap.
+            Each asset is built around a concrete professional context and
+            includes the final deliverable, process evidence, method
+            explanation, resume language, interview defense, and an extension
+            roadmap.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="/en/request-access"
+              href="/ai-roadmap-preview"
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
-              Request Early Access
+              Try AI Roadmap Preview
+            </a>
+
+            <a
+              href="/en/request-access"
+              className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+            >
+              Request early access
             </a>
 
             <a
               href="#categories"
               className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
             >
-              View Categories
+              View asset categories
             </a>
           </div>
         </div>
@@ -54,16 +62,16 @@ export default function EnglishHomePage() {
       <section className="border-y border-neutral-800 bg-neutral-900/40 px-6 py-14">
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
           <StatBlock
-            value="Evidence of ability"
-            label="A structured relation between output, process, method, and presentation"
+            value="Evidence assets"
+            label="Organize deliverables, process, methods, and positioning into professional proof"
           />
           <StatBlock
-            value="Bilingual expression"
-            label="Designed for domestic internships, global roles, and graduate applications"
+            value="Bilingual use"
+            label="Useful for domestic internships, international applications, global roles, and portfolios"
           />
           <StatBlock
-            value="Defensible work"
-            label="Each asset prepares contribution, limitations, and improvement paths"
+            value="Defensible results"
+            label="Each asset prepares contribution language, method boundaries, and interview follow-up questions"
           />
         </div>
       </section>
@@ -75,13 +83,14 @@ export default function EnglishHomePage() {
           </p>
 
           <h2 className="text-4xl font-semibold tracking-tight">
-            The seven-layer structure of a Proof Asset
+            The seven-layer Proof Asset structure
           </h2>
 
           <p className="mt-5 text-lg leading-8 text-neutral-300">
-            A useful professional asset cannot be reduced to a final file. It
-            must clarify its context, document its process, explain its method,
-            and translate the work into resume language and interview narrative.
+            A valuable professional asset cannot stop at a final file. It needs
+            context, process evidence, method explanation, resume language, and
+            interview defense so the student can explain what was built, why it
+            matters, and how it can be extended.
           </p>
         </div>
 
@@ -114,14 +123,15 @@ export default function EnglishHomePage() {
             </p>
 
             <h2 className="text-4xl font-semibold tracking-tight">
-              Different disciplines require different forms of evidence
+              Different fields need different forms of evidence
             </h2>
 
             <p className="mt-5 text-lg leading-8 text-neutral-300">
-              Technical fields often rely on runnable projects. Finance relies
-              on models, assumptions, and analytical reports. Business fields
-              emphasize problem framing and strategic reasoning. Research fields
-              require data, methods, and carefully bounded conclusions.
+              Technical students usually need runnable projects. Finance
+              students need models, assumptions, and analytical reports.
+              Business students need problem framing and strategic reasoning.
+              Research students need clear questions, methods, evidence, and
+              boundaries.
             </p>
           </div>
 
@@ -135,6 +145,7 @@ export default function EnglishHomePage() {
                 description={category.enDescription}
                 examples={category.enExamples}
                 abilities={category.enAbilities}
+                href={getCategoryHref(category.name)}
               />
             ))}
           </div>
@@ -149,26 +160,26 @@ export default function EnglishHomePage() {
             </p>
 
             <h2 className="text-4xl font-semibold tracking-tight">
-              MajorProof asset standards
+              The MajorProof asset standard
             </h2>
           </div>
 
           <div className="space-y-4">
             <DifferenceItem
-              title="The output must be presentable"
-              body="The final material should have a visible form, such as a GitHub project, PDF report, Excel model, slide deck, research document, or portfolio page."
+              title="The result must be showable"
+              body="The final asset needs a clear display format, such as a GitHub project, PDF report, Excel model, presentation, research document, or portfolio page."
             />
             <DifferenceItem
               title="The process must be traceable"
-              body="Data sources, implementation steps, model assumptions, analytical scope, and revisions should be recorded."
+              body="Data sources, implementation steps, assumptions, analysis logic, and revision history should be preserved."
             />
             <DifferenceItem
               title="The resume language must be verifiable"
-              body="Resume bullets should be precise, restrained, and explainable without overstating contribution or using terms the student cannot defend."
+              body="Resume bullets should be accurate, restrained, and explainable. They should not exaggerate contribution or use terms the student cannot defend."
             />
             <DifferenceItem
-              title="The interview narrative must be defensible"
-              body="Students should be able to discuss background, individual contribution, method choices, limitations, and possible improvements."
+              title="The interview story must be defensible"
+              body="The student should be able to explain the background, personal contribution, method choices, limitations, and possible next steps."
             />
           </div>
         </div>
@@ -181,37 +192,75 @@ export default function EnglishHomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 max-w-3xl">
             <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
-              Pricing
+              Pricing Test
             </p>
 
             <h2 className="text-4xl font-semibold tracking-tight">
-              The first stage validates asset packs
+              The first stage is demand validation
             </h2>
 
             <p className="mt-5 text-lg leading-8 text-neutral-300">
-              The current priority is not to build a complex platform. The first
-              stage tests whether students are willing to pay for structured
-              professional assets, presentation materials, and interview
-              explanation systems.
+              The current priority is not to build a complex platform
+              immediately. The first goal is to validate whether students are
+              willing to pay for structured professional assets, display
+              materials, and interview explanation systems.
             </p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             <PriceCard
-              title="Single Asset"
-              price="¥29–69"
-              body="For completing one clearly defined asset, such as a technical project, valuation model, or business case."
+              title="Roadmap Review"
+              price="¥29"
+              body="For students who want a low-risk direction check before committing to a full asset pack."
             />
             <PriceCard
-              title="Category Pack"
-              price="¥99–199"
-              body="For building several complementary assets within one professional direction."
+              title="Starter Pack"
+              price="¥99"
+              body="For students who want one concrete asset with structure, deliverables, evidence, resume language, and interview defense."
             />
             <PriceCard
-              title="Full Roadmap"
-              price="From ¥299"
-              body="For students who need a more complete proof path for internships, applications, or portfolios."
+              title="Personalized Plan"
+              price="¥199+"
+              body="For students who need a more personalized asset path around applications, internships, or portfolio goals."
             />
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <div className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6 md:p-10">
+          <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
+                Start Here
+              </p>
+
+              <h2 className="text-4xl font-semibold tracking-tight">
+                Not sure which asset fits you
+              </h2>
+
+              <p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-300">
+                Use the AI Roadmap Preview first. If the result fits your goal,
+                submit a formal early access request and continue into a more
+                complete Proof Asset workflow.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <a
+                href="/ai-roadmap-preview"
+                className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
+              >
+                Try AI Roadmap Preview
+              </a>
+
+              <a
+                href="/en/request-access"
+                className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+              >
+                Request early access
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -223,11 +272,31 @@ export default function EnglishHomePage() {
   );
 }
 
+function getCategoryHref(name: string) {
+  if (name === "TechProof") {
+    return "/product/techproof-ai-document-review/starter-pack";
+  }
+
+  if (name === "FinanceProof") {
+    return "/product/financeproof-company-research-valuation-kit";
+  }
+
+  if (name === "BusinessProof") {
+    return "/product/businessproof-market-entry-strategy-kit";
+  }
+
+  if (name === "ResearchProof") {
+    return "/product/researchproof-literature-method-kit";
+  }
+
+  return "/assets";
+}
+
 function StatBlock({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
       <p className="text-2xl font-semibold">{value}</p>
-      <p className="mt-2 text-sm text-neutral-500">{label}</p>
+      <p className="mt-2 text-sm leading-6 text-neutral-500">{label}</p>
     </div>
   );
 }
@@ -239,6 +308,7 @@ function CategoryCard({
   description,
   examples,
   abilities,
+  href,
 }: {
   name: string;
   audience: string;
@@ -246,6 +316,7 @@ function CategoryCard({
   description: string;
   examples: string[];
   abilities: string[];
+  href: string;
 }) {
   return (
     <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6 transition hover:border-neutral-600">
@@ -267,7 +338,7 @@ function CategoryCard({
 
       <div className="mb-6">
         <p className="mb-3 text-sm font-medium text-neutral-300">
-          Demonstrated abilities
+          What it demonstrates
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -284,7 +355,7 @@ function CategoryCard({
 
       <div>
         <p className="mb-3 text-sm font-medium text-neutral-300">
-          Sample assets
+          Example assets
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -298,6 +369,13 @@ function CategoryCard({
           ))}
         </div>
       </div>
+
+      <a
+        href={href}
+        className="mt-8 inline-flex rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
+      >
+        View validation page
+      </a>
     </div>
   );
 }
