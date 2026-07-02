@@ -1,4 +1,5 @@
 import PublicFooter from "@/components/PublicFooter";
+import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 import { proofAssets } from "@/lib/assets";
 
@@ -13,7 +14,7 @@ export default function EnglishAssetsPage() {
         </p>
 
         <h1 className="max-w-4xl text-5xl font-semibold tracking-tight">
-          Initial professional assets.
+          Initial professional assets
         </h1>
 
         <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
@@ -61,6 +62,8 @@ export default function EnglishAssetsPage() {
           ))}
         </div>
       </section>
+
+      <RequestAccessCTA locale="en" />
 
       <PublicFooter locale="en" />
     </main>

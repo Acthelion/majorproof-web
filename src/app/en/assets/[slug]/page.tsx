@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import PublicFooter from "@/components/PublicFooter";
+import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 import { getProofAsset, proofAssets } from "@/lib/assets";
 
@@ -89,6 +90,7 @@ export default async function EnglishAssetDetailPage({
 
           <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6">
             <h2 className="mb-5 text-2xl font-semibold">Use Case</h2>
+
             <div className="space-y-4 leading-8 text-neutral-300">
               <p>
                 This asset is intended for students who need a concrete work
@@ -97,6 +99,7 @@ export default async function EnglishAssetDetailPage({
                 presentation framework rather than a substitute for personal
                 work.
               </p>
+
               <p>
                 The final version should be adapted with the student&apos;s own
                 data, implementation choices, written explanation, and
@@ -106,6 +109,8 @@ export default async function EnglishAssetDetailPage({
           </section>
         </div>
       </section>
+
+      <RequestAccessCTA locale="en" />
 
       <PublicFooter locale="en" />
     </main>

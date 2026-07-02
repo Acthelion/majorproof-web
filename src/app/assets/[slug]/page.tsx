@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import PublicFooter from "@/components/PublicFooter";
+import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 import { getProofAsset, proofAssets } from "@/lib/assets";
 
@@ -15,9 +16,7 @@ export function generateStaticParams() {
   }));
 }
 
-export default async function AssetDetailPage({
-  params,
-}: AssetDetailPageProps) {
+export default async function AssetDetailPage({ params }: AssetDetailPageProps) {
   const { slug } = await params;
   const asset = getProofAsset(slug);
 
@@ -34,7 +33,7 @@ export default async function AssetDetailPage({
           href="/assets"
           className="mb-10 inline-block text-sm text-neutral-500 hover:text-neutral-100"
         >
-          ← 返回资产列表
+          ← 返回资产库
         </a>
 
         <header className="mb-12">
@@ -50,9 +49,18 @@ export default async function AssetDetailPage({
             {asset.zhSubtitle}
           </p>
 
-          <div className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-            <p className="mb-2 text-sm text-neutral-500">适合对象</p>
-            <p className="text-neutral-200">{asset.zhAudience}</p>
+          <div className="mt-6 grid gap-4 md:grid-cols-[1fr_1.2fr]">
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+              <p className="mb-2 text-sm text-neutral-500">适用对象</p>
+              <p className="text-neutral-200">{asset.zhAudience}</p>
+            </div>
+
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+              <p className="mb-2 text-sm text-neutral-500">资产类型</p>
+              <p className="text-neutral-200">
+                专业能力作品样本，包含文档说明、展示表达和面试防守结构。
+              </p>
+            </div>
           </div>
         </header>
 
@@ -61,23 +69,39 @@ export default async function AssetDetailPage({
             <p>{asset.zhOutcome}</p>
           </Section>
 
-          <Section title="包含内容">
+          <Section title="包含材料">
             <List items={asset.zhIncludes} />
           </Section>
 
-          <Section title="可证明能力">
+          <Section title="展示能力">
             <TagList items={asset.zhAbilities} />
           </Section>
 
-          <Section title="建议完成路径">
+          <Section title="推荐完成流程">
             <OrderedList items={asset.zhWorkflow} />
           </Section>
 
           <Section title="使用边界">
             <List items={asset.zhBoundary} />
           </Section>
+
+          <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6">
+            <h2 className="mb-5 text-2xl font-semibold">使用场景</h2>
+
+            <div className="space-y-4 leading-8 text-neutral-300">
+              <p>
+                这个资产适合需要实习申请、作品集展示、申请材料补充或面试准备的学生。它应当被用作学习、训练和展示框架，而不是替代个人完成过程。
+              </p>
+
+              <p>
+                最终版本需要结合学生自己的数据、实现选择、书面解释和实际贡献进行个性化修改。
+              </p>
+            </div>
+          </section>
         </div>
       </section>
+
+      <RequestAccessCTA locale="zh" />
 
       <PublicFooter locale="zh" />
     </main>

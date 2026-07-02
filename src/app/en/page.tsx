@@ -1,4 +1,5 @@
 import PublicFooter from "@/components/PublicFooter";
+import RequestAccessCTA from "@/components/RequestAccessCTA";
 import SiteNav from "@/components/SiteNav";
 import { categories, proofAssetLayersEn } from "@/lib/content";
 
@@ -16,7 +17,7 @@ export default function EnglishHomePage() {
           <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
             Convert academic work
             <br />
-            into verifiable evidence of ability.
+            into verifiable evidence of ability
           </h1>
 
           <p className="mt-8 max-w-3xl text-xl leading-9 text-neutral-300">
@@ -34,16 +35,17 @@ export default function EnglishHomePage() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="#categories"
+              href="/en/request-access"
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
-              View Categories
+              Request Early Access
             </a>
+
             <a
-              href="/en/integrity"
+              href="#categories"
               className="rounded-full border border-neutral-700 px-6 py-3 text-center font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
             >
-              Academic Integrity
+              View Categories
             </a>
           </div>
         </div>
@@ -71,9 +73,11 @@ export default function EnglishHomePage() {
           <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
             Asset Method
           </p>
+
           <h2 className="text-4xl font-semibold tracking-tight">
-            The seven-layer structure of a Proof Asset.
+            The seven-layer structure of a Proof Asset
           </h2>
+
           <p className="mt-5 text-lg leading-8 text-neutral-300">
             A useful professional asset cannot be reduced to a final file. It
             must clarify its context, document its process, explain its method,
@@ -108,9 +112,11 @@ export default function EnglishHomePage() {
             <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
               Categories
             </p>
+
             <h2 className="text-4xl font-semibold tracking-tight">
-              Different disciplines require different forms of evidence.
+              Different disciplines require different forms of evidence
             </h2>
+
             <p className="mt-5 text-lg leading-8 text-neutral-300">
               Technical fields often rely on runnable projects. Finance relies
               on models, assumptions, and analytical reports. Business fields
@@ -141,8 +147,9 @@ export default function EnglishHomePage() {
             <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
               Standard
             </p>
+
             <h2 className="text-4xl font-semibold tracking-tight">
-              MajorProof asset standards.
+              MajorProof asset standards
             </h2>
           </div>
 
@@ -176,9 +183,11 @@ export default function EnglishHomePage() {
             <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
               Pricing
             </p>
+
             <h2 className="text-4xl font-semibold tracking-tight">
-              The first stage validates asset packs.
+              The first stage validates asset packs
             </h2>
+
             <p className="mt-5 text-lg leading-8 text-neutral-300">
               The current priority is not to build a complex platform. The first
               stage tests whether students are willing to pay for structured
@@ -206,6 +215,8 @@ export default function EnglishHomePage() {
           </div>
         </div>
       </section>
+
+      <RequestAccessCTA locale="en" />
 
       <PublicFooter locale="en" />
     </main>
@@ -245,6 +256,7 @@ function CategoryCard({
           </p>
           <h3 className="mt-3 text-2xl font-semibold">{title}</h3>
         </div>
+
         <span className="rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-500">
           Asset
         </span>
@@ -257,6 +269,7 @@ function CategoryCard({
         <p className="mb-3 text-sm font-medium text-neutral-300">
           Demonstrated abilities
         </p>
+
         <div className="flex flex-wrap gap-2">
           {abilities.map((ability) => (
             <span
@@ -273,6 +286,7 @@ function CategoryCard({
         <p className="mb-3 text-sm font-medium text-neutral-300">
           Sample assets
         </p>
+
         <div className="flex flex-wrap gap-2">
           {examples.map((example) => (
             <span
