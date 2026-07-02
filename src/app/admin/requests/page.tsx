@@ -35,6 +35,8 @@ type MajorProofRequest = {
   willing_to_test: boolean;
   source_page: string | null;
   asset_intent: string | null;
+  purchase_intent: string | null;
+  expected_price_range: string | null;
   status: RequestStatus | null;
   admin_note: string | null;
   created_at: string;
@@ -113,7 +115,7 @@ export default async function AdminRequestsPage({
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, status, admin_note, created_at, updated_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
 
@@ -141,6 +143,8 @@ export default async function AdminRequestsPage({
   const majorCounts = countByField(requests, "current_major");
   const sourceCounts = countByField(requests, "source_page");
   const assetIntentCounts = countByField(requests, "asset_intent");
+  const purchaseIntentCounts = countByField(requests, "purchase_intent");
+  const priceRangeCounts = countByField(requests, "expected_price_range");
   const statusCounts = countStatuses(requests);
 
   const exportHref = buildExportHref(filters);
@@ -162,7 +166,7 @@ export default async function AdminRequestsPage({
             </h1>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-              这里用于查看、筛选、导出和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、主要痛点、用户意向和后续跟进状态。
+              这里用于查看、筛选、导出和管理 MajorProof 表单收集到的真实需求。重点看专业分布、资产方向、来源页面、购买意向、价格区间和后续跟进状态。
             </p>
           </div>
 
@@ -221,6 +225,8 @@ export default async function AdminRequestsPage({
 
         <div className="mb-8 grid gap-5 md:grid-cols-2">
           <SummaryCard title="状态统计" items={statusCounts} />
+          <SummaryCard title="购买意向统计" items={purchaseIntentCounts} />
+          <SummaryCard title="价格区间统计" items={priceRangeCounts} />
           <SummaryCard title="资产方向统计" items={assetCounts} />
           <SummaryCard title="专业方向统计" items={majorCounts} />
           <SummaryCard title="来源页面统计" items={sourceCounts} />
@@ -359,7 +365,7 @@ function FilterPanel({
           <input
             name="q"
             defaultValue={filters.q}
-            placeholder="专业、需求、联系方式、备注"
+            placeholder="专业、需求、价格、联系方式、备注"
             className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-neutral-500"
           />
         </label>
@@ -445,6 +451,9 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
           <Tag>{request.current_major}</Tag>
           {request.current_year ? <Tag>{request.current_year}</Tag> : null}
           {request.asset_intent ? <Tag>{request.asset_intent}</Tag> : null}
+          {request.expected_price_range ? (
+            <Tag>{request.expected_price_range}</Tag>
+          ) : null}
           {request.willing_to_test ? <Tag>愿意早期测试</Tag> : null}
         </div>
       </div>
@@ -466,6 +475,14 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
         />
         <InfoBlock title="来源页面" body={request.source_page || "未记录"} />
         <InfoBlock title="资产意向" body={request.asset_intent || "未记录"} />
+        <InfoBlock
+          title="购买意向"
+          body={request.purchase_intent || "未填写"}
+        />
+        <InfoBlock
+          title="价格区间"
+          body={request.expected_price_range || "未填写"}
+        />
       </div>
 
       <div className="mt-5 rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
@@ -509,7 +526,7 @@ function RequestCard({ request }: { request: MajorProofRequest }) {
               name="adminNote"
               defaultValue={request.admin_note || ""}
               rows={4}
-              placeholder="例如：EE 大二，TechProof，高意向，适合第一批访谈"
+              placeholder="例如：EE 大二，TechProof，高意向，愿意接受 ¥29–69"
               className="w-full resize-none rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-3 text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-neutral-500"
             />
           </label>
@@ -589,6 +606,8 @@ function filterRequests(
         request.language_preference,
         request.source_page,
         request.asset_intent,
+        request.purchase_intent,
+        request.expected_price_range,
         request.admin_note,
         ...(request.interested_assets || []),
       ]
@@ -623,7 +642,11 @@ function countByField(
   requests: MajorProofRequest[],
   field: keyof Pick<
     MajorProofRequest,
-    "current_major" | "source_page" | "asset_intent"
+    | "current_major"
+    | "source_page"
+    | "asset_intent"
+    | "purchase_intent"
+    | "expected_price_range"
   >
 ) {
   const counts = new Map<string, number>();

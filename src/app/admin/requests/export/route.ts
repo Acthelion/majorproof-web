@@ -19,6 +19,8 @@ type MajorProofRequest = {
   willing_to_test: boolean;
   source_page: string | null;
   asset_intent: string | null;
+  purchase_intent: string | null;
+  expected_price_range: string | null;
   status: RequestStatus | null;
   admin_note: string | null;
   created_at: string;
@@ -38,7 +40,7 @@ export async function GET(request: Request) {
   const { data, error } = await supabaseAdmin
     .from("majorproof_requests")
     .select(
-      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, status, admin_note, created_at, updated_at"
+      "id, name_or_alias, contact_method, current_major, current_year, target_goal, interested_assets, primary_need, language_preference, willing_to_test, source_page, asset_intent, purchase_intent, expected_price_range, status, admin_note, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
 
@@ -107,6 +109,8 @@ function filterRequests(
         request.language_preference,
         request.source_page,
         request.asset_intent,
+        request.purchase_intent,
+        request.expected_price_range,
         request.admin_note,
         ...(request.interested_assets || []),
       ]
@@ -137,6 +141,8 @@ function buildCsv(requests: MajorProofRequest[]) {
     "willing_to_test",
     "source_page",
     "asset_intent",
+    "purchase_intent",
+    "expected_price_range",
     "status",
     "status_label",
     "admin_note",
@@ -145,7 +151,7 @@ function buildCsv(requests: MajorProofRequest[]) {
   ];
 
   const rows = requests.map((request) => {
-    const status = request.status || "new";
+    const status: RequestStatus = request.status || "new";
 
     return [
       request.id,
@@ -160,6 +166,8 @@ function buildCsv(requests: MajorProofRequest[]) {
       request.willing_to_test ? "yes" : "no",
       request.source_page || "",
       request.asset_intent || "",
+      request.purchase_intent || "",
+      request.expected_price_range || "",
       status,
       getStatusLabel(status),
       request.admin_note || "",
