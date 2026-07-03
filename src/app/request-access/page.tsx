@@ -6,6 +6,26 @@ type PageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
+type AssetKitConfig = {
+  asset: string;
+  source: string;
+  titleLineOne: string;
+  titleLineTwo: string;
+  description: string;
+  subDescription: string;
+  statOneValue: string;
+  statOneLabel: string;
+  statTwoValue: string;
+  statTwoLabel: string;
+  statThreeValue: string;
+  statThreeLabel: string;
+  sideCardOneTitle: string;
+  sideCardOneItems: string[];
+  submitLabel: string;
+  starterPackLabel: string;
+  personalizedPlanLabel: string;
+};
+
 const assetOptions = [
   {
     value: "TechProof",
@@ -15,17 +35,17 @@ const assetOptions = [
   {
     value: "FinanceProof",
     label: "FinanceProof",
-    body: "估值模型、行业研究、投资分析、金融实习申请材料",
+    body: "估值模型、公司研究、行业分析、投资逻辑和金融实习材料",
   },
   {
     value: "BusinessProof",
     label: "BusinessProof",
-    body: "商业分析、市场进入、产品策略、咨询类案例材料",
+    body: "商业分析、市场进入、产品策略、咨询案例和战略推理材料",
   },
   {
     value: "ResearchProof",
     label: "ResearchProof",
-    body: "研究计划、文献综述、方法解释、学术项目材料",
+    body: "研究计划、文献综述、方法解释、学术项目和研究能力材料",
   },
 ];
 
@@ -38,29 +58,124 @@ const yearOptions = [
   "其他",
 ];
 
-const priceOptions = [
+const assetKitConfigs: AssetKitConfig[] = [
   {
-    value: "",
-    label: "暂不确定",
+    asset: "TechProof",
+    source: "techproof-starter-pack",
+    titleLineOne: "申请 TechProof",
+    titleLineTwo: "Starter Pack 付费测试",
+    description:
+      "你正在申请 TechProof AI Document Review Platform Starter Pack 的早期付费测试。这个申请会帮助我们判断你的背景、目标和当前问题是否适合进入第一批交付。",
+    subDescription:
+      "当前阶段不自动收费，也不承诺结果。我们会根据你的申请内容判断是否适合继续沟通，并确认你是否愿意测试 ¥29、¥99 或更高阶的个性化方案。",
+    statOneValue: "付费验证",
+    statOneLabel: "验证学生是否愿意为结构化技术项目资产包付费",
+    statTwoValue: "TechProof",
+    statTwoLabel: "聚焦工科、CS、EE、AI 和数据方向的技术项目资产",
+    statThreeValue: "人工确认",
+    statThreeLabel: "提交后不会自动扣费，需要后续沟通确认交付范围",
+    sideCardOneTitle: "TechProof Starter Pack 包含什么",
+    sideCardOneItems: [
+      "项目背景与专业场景",
+      "功能结构与模块拆分",
+      "技术栈建议",
+      "最终成果清单",
+      "过程证据清单",
+      "简历表达草案",
+      "面试防守问题",
+    ],
+    submitLabel: "提交 TechProof 测试申请",
+    starterPackLabel: "¥99 TechProof Starter Pack",
+    personalizedPlanLabel: "¥199 起 Personalized TechProof Plan",
   },
   {
-    value: "29-roadmap-review",
-    label: "¥29 Roadmap Review",
+    asset: "FinanceProof",
+    source: "financeproof-company-research-valuation-kit",
+    titleLineOne: "申请 FinanceProof",
+    titleLineTwo: "公司研究与估值测试",
+    description:
+      "你正在申请 FinanceProof Company Research and Valuation Kit 的早期测试。这个申请会帮助我们判断你的金融研究目标、数据基础和估值需求是否适合进入第一批验证。",
+    subDescription:
+      "当前阶段不提供投资建议，也不自动收费。我们会根据你的申请内容判断是否适合继续沟通，并确认你是否需要路线评估、Starter Kit 或个性化金融资产方案。",
+    statOneValue: "研究验证",
+    statOneLabel: "验证学生是否愿意为结构化公司研究与估值资产付费",
+    statTwoValue: "FinanceProof",
+    statTwoLabel: "聚焦公司研究、财务拆解、估值框架和面试防守",
+    statThreeValue: "非投资建议",
+    statThreeLabel: "资产包用于研究训练和能力展示，不提供买卖建议",
+    sideCardOneTitle: "FinanceProof Starter Kit 包含什么",
+    sideCardOneItems: [
+      "公司研究框架",
+      "行业与竞争分析",
+      "关键经营指标",
+      "估值模型结构",
+      "投资观点表达边界",
+      "简历表达草案",
+      "面试防守问题",
+    ],
+    submitLabel: "提交 FinanceProof 测试申请",
+    starterPackLabel: "¥99 FinanceProof Starter Kit",
+    personalizedPlanLabel: "¥199 起 Personalized FinanceProof Plan",
   },
   {
-    value: "99-starter-pack",
-    label: "¥99 TechProof Starter Pack",
+    asset: "BusinessProof",
+    source: "businessproof-market-entry-strategy-kit",
+    titleLineOne: "申请 BusinessProof",
+    titleLineTwo: "市场进入策略测试",
+    description:
+      "你正在申请 BusinessProof Market Entry Strategy Kit 的早期测试。这个申请会帮助我们判断你的商业分析目标、市场问题和策略需求是否适合进入第一批验证。",
+    subDescription:
+      "当前阶段不替你编造咨询、创业或商业实习经历，也不自动收费。我们会根据你的申请内容判断是否适合继续沟通，并确认你需要哪种商业分析资产方案。",
+    statOneValue: "策略验证",
+    statOneLabel: "验证学生是否愿意为结构化商业分析与市场进入资产付费",
+    statTwoValue: "BusinessProof",
+    statTwoLabel: "聚焦市场选择、用户问题、竞争判断和进入路径",
+    statThreeValue: "真实分析",
+    statThreeLabel: "资产包用于商业分析训练，不包装虚假经历",
+    sideCardOneTitle: "BusinessProof Starter Kit 包含什么",
+    sideCardOneItems: [
+      "市场进入问题定义",
+      "市场规模与细分",
+      "竞争格局分析",
+      "进入策略设计",
+      "执行路线与指标",
+      "简历表达草案",
+      "面试防守问题",
+    ],
+    submitLabel: "提交 BusinessProof 测试申请",
+    starterPackLabel: "¥99 BusinessProof Starter Kit",
+    personalizedPlanLabel: "¥199 起 Personalized BusinessProof Plan",
   },
   {
-    value: "199-personalized-plan",
-    label: "¥199 起 Personalized TechProof Plan",
-  },
-  {
-    value: "need-discussion",
-    label: "需要先沟通",
+    asset: "ResearchProof",
+    source: "researchproof-literature-method-kit",
+    titleLineOne: "申请 ResearchProof",
+    titleLineTwo: "文献与方法测试",
+    description:
+      "你正在申请 ResearchProof Literature and Method Kit 的早期测试。这个申请会帮助我们判断你的研究主题、文献基础和方法需求是否适合进入第一批验证。",
+    subDescription:
+      "当前阶段不代写论文，不编造科研经历，也不自动收费。我们会根据你的申请内容判断是否适合继续沟通，并确认你需要路线评估、Starter Kit 或个性化研究资产方案。",
+    statOneValue: "研究资产",
+    statOneLabel: "验证学生是否愿意为结构化文献综述与方法说明资产付费",
+    statTwoValue: "ResearchProof",
+    statTwoLabel: "聚焦研究问题、文献位置、方法适配和研究边界",
+    statThreeValue: "学术诚信",
+    statThreeLabel: "资产包用于研究训练，不代写论文或伪造科研经历",
+    sideCardOneTitle: "ResearchProof Starter Kit 包含什么",
+    sideCardOneItems: [
+      "研究问题界定",
+      "文献综述结构",
+      "方法选择说明",
+      "证据与材料清单",
+      "研究边界与局限",
+      "简历表达草案",
+      "面试防守问题",
+    ],
+    submitLabel: "提交 ResearchProof 测试申请",
+    starterPackLabel: "¥99 ResearchProof Starter Kit",
+    personalizedPlanLabel: "¥199 起 Personalized ResearchProof Plan",
   },
 ];
-
 export default async function RequestAccessPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
 
@@ -72,10 +187,13 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
   );
   const error = getErrorMessage(getSearchParam(resolvedSearchParams, "error"));
 
-  const isTechProofPaidTest =
-    sourcePage === "techproof-starter-pack" && assetIntent === "TechProof";
-
-  const pageCopy = getPageCopy(isTechProofPaidTest);
+  const activeKit = getActiveAssetKit(sourcePage, assetIntent);
+  const pageCopy = activeKit || defaultPageCopy;
+  const priceOptions = getPriceOptions(activeKit);
+  const defaultPurchaseIntent = activeKit
+    ? `interested-in-paid-${activeKit.asset.toLowerCase()}-test`
+    : "";
+  const defaultPriceRange = activeKit ? "99-starter-pack" : "";
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -229,7 +347,6 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
                   ))}
                 </div>
               </div>
-
               <TextAreaField
                 label="当前最主要的问题"
                 name="primaryNeed"
@@ -245,16 +362,18 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
                   <select
                     name="purchaseIntent"
                     className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-500"
-                    defaultValue={
-                      isTechProofPaidTest
-                        ? "interested-in-paid-techproof-test"
-                        : ""
-                    }
+                    defaultValue={defaultPurchaseIntent}
                   >
                     <option value="">暂不确定</option>
-                    <option value="interested-in-paid-techproof-test">
-                      我对付费测试感兴趣
-                    </option>
+                    {activeKit ? (
+                      <option value={defaultPurchaseIntent}>
+                        我对 {activeKit.asset} 付费测试感兴趣
+                      </option>
+                    ) : (
+                      <option value="interested-in-paid-asset-test">
+                        我对付费测试感兴趣
+                      </option>
+                    )}
                     <option value="need-free-preview-first">
                       我想先看免费路线预览
                     </option>
@@ -274,7 +393,7 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
                   <select
                     name="expectedPriceRange"
                     className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-500"
-                    defaultValue={isTechProofPaidTest ? "99-starter-pack" : ""}
+                    defaultValue={defaultPriceRange}
                   >
                     {priceOptions.map((option) => (
                       <option key={option.value || "empty"} value={option.value}>
@@ -290,7 +409,7 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
                   type="checkbox"
                   name="willingToTest"
                   value="true"
-                  defaultChecked={isTechProofPaidTest}
+                  defaultChecked={Boolean(activeKit)}
                   className="mt-1"
                 />
                 <span className="text-sm leading-7 text-neutral-400">
@@ -368,60 +487,87 @@ export default async function RequestAccessPage({ searchParams }: PageProps) {
     </main>
   );
 }
+const defaultPageCopy = {
+  titleLineOne: "申请 MajorProof",
+  titleLineTwo: "早期访问",
+  description:
+    "填写你的专业、年级、目标和当前问题，帮助我们判断你适合哪类 Proof Asset，以及是否适合进入早期测试名单。",
+  subDescription:
+    "当前阶段主要用于产品验证、需求判断和早期用户沟通。提交申请不会产生付款义务，也不会自动创建账号。",
+  statOneValue: "需求判断",
+  statOneLabel: "判断你最需要的是技术、金融、商业还是研究类资产",
+  statTwoValue: "早期用户",
+  statTwoLabel: "优先邀请目标明确、问题清晰、愿意反馈的学生",
+  statThreeValue: "可验证成果",
+  statThreeLabel: "关注你缺少哪类可展示成果和可解释材料",
+  sideCardOneTitle: "我们会关注什么",
+  sideCardOneItems: [
+    "你的专业背景",
+    "你的目标方向",
+    "你缺少的成果类型",
+    "你是否有明确痛点",
+    "你是否愿意测试资产包",
+    "你是否可能成为付费用户",
+  ],
+  submitLabel: "提交申请",
+};
 
-function getPageCopy(isTechProofPaidTest: boolean) {
-  if (isTechProofPaidTest) {
-    return {
-      titleLineOne: "申请 TechProof",
-      titleLineTwo: "Starter Pack 付费测试",
-      description:
-        "你正在申请 TechProof AI Document Review Platform Starter Pack 的早期付费测试。这个申请会帮助我们判断你的背景、目标和当前问题是否适合进入第一批交付。",
-      subDescription:
-        "当前阶段不自动收费，也不承诺结果。我们会根据你的申请内容判断是否适合继续沟通，并确认你是否愿意测试 ¥29、¥99 或更高阶的个性化方案。",
-      statOneValue: "付费验证",
-      statOneLabel: "重点验证学生是否愿意为结构化技术项目资产包付费",
-      statTwoValue: "TechProof",
-      statTwoLabel: "聚焦工科、CS、EE、AI 和数据方向的技术项目资产",
-      statThreeValue: "人工确认",
-      statThreeLabel: "提交后不会自动扣费，需要后续沟通确认交付范围",
-      sideCardOneTitle: "TechProof Starter Pack 包含什么",
-      sideCardOneItems: [
-        "项目背景与专业场景",
-        "功能结构与模块拆分",
-        "技术栈建议",
-        "最终成果清单",
-        "过程证据清单",
-        "简历表达草案",
-        "面试防守问题",
-      ],
-      submitLabel: "提交付费测试申请",
-    };
+function getActiveAssetKit(sourcePage: string, assetIntent: string) {
+  return (
+    assetKitConfigs.find(
+      (config) => config.source === sourcePage && config.asset === assetIntent
+    ) || null
+  );
+}
+
+function getPriceOptions(activeKit: AssetKitConfig | null) {
+  if (!activeKit) {
+    return [
+      {
+        value: "",
+        label: "暂不确定",
+      },
+      {
+        value: "29-roadmap-review",
+        label: "¥29 Roadmap Review",
+      },
+      {
+        value: "99-starter-pack",
+        label: "¥99 Starter Pack",
+      },
+      {
+        value: "199-personalized-plan",
+        label: "¥199 起 Personalized Plan",
+      },
+      {
+        value: "need-discussion",
+        label: "需要先沟通",
+      },
+    ];
   }
 
-  return {
-    titleLineOne: "申请 MajorProof",
-    titleLineTwo: "早期访问",
-    description:
-      "填写你的专业、年级、目标和当前问题，帮助我们判断你适合哪类 Proof Asset，以及是否适合进入早期测试名单。",
-    subDescription:
-      "当前阶段主要用于产品验证、需求判断和早期用户沟通。提交申请不会产生付款义务，也不会自动创建账号。",
-    statOneValue: "需求判断",
-    statOneLabel: "判断你最需要的是技术、金融、商业还是研究类资产",
-    statTwoValue: "早期用户",
-    statTwoLabel: "优先邀请目标明确、问题清晰、愿意反馈的学生",
-    statThreeValue: "可验证成果",
-    statThreeLabel: "关注你缺少哪类可展示成果和可解释材料",
-    sideCardOneTitle: "我们会关注什么",
-    sideCardOneItems: [
-      "你的专业背景",
-      "你的目标方向",
-      "你缺少的成果类型",
-      "你是否有明确痛点",
-      "你是否愿意测试资产包",
-      "你是否可能成为付费用户",
-    ],
-    submitLabel: "提交申请",
-  };
+  return [
+    {
+      value: "",
+      label: "暂不确定",
+    },
+    {
+      value: "29-roadmap-review",
+      label: "¥29 Roadmap Review",
+    },
+    {
+      value: "99-starter-pack",
+      label: activeKit.starterPackLabel,
+    },
+    {
+      value: "199-personalized-plan",
+      label: activeKit.personalizedPlanLabel,
+    },
+    {
+      value: "need-discussion",
+      label: "需要先沟通",
+    },
+  ];
 }
 
 function FormField({
@@ -478,7 +624,6 @@ function TextAreaField({
     </label>
   );
 }
-
 function AssetCheckbox({
   option,
   defaultChecked,

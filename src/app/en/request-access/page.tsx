@@ -6,6 +6,26 @@ type PageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
+type AssetKitConfig = {
+  asset: string;
+  source: string;
+  titleLineOne: string;
+  titleLineTwo: string;
+  description: string;
+  subDescription: string;
+  statOneValue: string;
+  statOneLabel: string;
+  statTwoValue: string;
+  statTwoLabel: string;
+  statThreeValue: string;
+  statThreeLabel: string;
+  sideCardOneTitle: string;
+  sideCardOneItems: string[];
+  submitLabel: string;
+  starterPackLabel: string;
+  personalizedPlanLabel: string;
+};
+
 const assetOptions = [
   {
     value: "TechProof",
@@ -38,29 +58,136 @@ const yearOptions = [
   "Other",
 ];
 
-const priceOptions = [
+const assetKitConfigs: AssetKitConfig[] = [
   {
-    value: "",
-    label: "Not sure yet",
+    asset: "TechProof",
+    source: "techproof-starter-pack",
+    titleLineOne: "Apply for TechProof",
+    titleLineTwo: "Starter Pack paid test",
+    description:
+      "You are applying for the early paid test of the TechProof AI Document Review Platform Starter Pack. This request helps us judge whether your background, target, and current problem fit the first delivery batch.",
+    subDescription:
+      "This stage does not charge automatically and does not promise outcomes. We will review your request and confirm whether you want to test the ¥29, ¥99, or personalized plan options.",
+    statOneValue: "Paid validation",
+    statOneLabel:
+      "Testing whether students are willing to pay for a structured technical project asset pack",
+    statTwoValue: "TechProof",
+    statTwoLabel:
+      "Focused on engineering, CS, EE, AI, and data-related technical project assets",
+    statThreeValue: "Manual review",
+    statThreeLabel:
+      "Submission does not trigger automatic payment. The delivery scope must be confirmed later.",
+    sideCardOneTitle: "What the TechProof Starter Pack includes",
+    sideCardOneItems: [
+      "Professional context",
+      "Functional structure",
+      "Technology stack suggestion",
+      "Final deliverable checklist",
+      "Process evidence checklist",
+      "Resume bullet drafts",
+      "Interview defense questions",
+    ],
+    submitLabel: "Submit TechProof test request",
+    starterPackLabel: "¥99 TechProof Starter Pack",
+    personalizedPlanLabel: "¥199+ Personalized TechProof Plan",
   },
   {
-    value: "29-roadmap-review",
-    label: "¥29 Roadmap Review",
+    asset: "FinanceProof",
+    source: "financeproof-company-research-valuation-kit",
+    titleLineOne: "Apply for FinanceProof",
+    titleLineTwo: "Company research and valuation test",
+    description:
+      "You are applying for the early test of the FinanceProof Company Research and Valuation Kit. This request helps us judge whether your finance research goal, data foundation, and valuation needs fit the first validation batch.",
+    subDescription:
+      "This stage does not provide investment advice and does not charge automatically. We will review your request and confirm whether you need a roadmap review, Starter Kit, or personalized finance asset plan.",
+    statOneValue: "Research validation",
+    statOneLabel:
+      "Testing whether students are willing to pay for a structured company research and valuation asset",
+    statTwoValue: "FinanceProof",
+    statTwoLabel:
+      "Focused on company research, financial breakdowns, valuation frameworks, and interview defense",
+    statThreeValue: "Not investment advice",
+    statThreeLabel:
+      "The kit is for research training and capability demonstration, not buy or sell recommendations",
+    sideCardOneTitle: "What the FinanceProof Starter Kit includes",
+    sideCardOneItems: [
+      "Company research framework",
+      "Industry and competition analysis",
+      "Key financial drivers",
+      "Valuation model structure",
+      "Investment view boundaries",
+      "Resume bullet drafts",
+      "Interview defense questions",
+    ],
+    submitLabel: "Submit FinanceProof test request",
+    starterPackLabel: "¥99 FinanceProof Starter Kit",
+    personalizedPlanLabel: "¥199+ Personalized FinanceProof Plan",
   },
   {
-    value: "99-starter-pack",
-    label: "¥99 TechProof Starter Pack",
+    asset: "BusinessProof",
+    source: "businessproof-market-entry-strategy-kit",
+    titleLineOne: "Apply for BusinessProof",
+    titleLineTwo: "Market entry strategy test",
+    description:
+      "You are applying for the early test of the BusinessProof Market Entry Strategy Kit. This request helps us judge whether your business-analysis goal, market problem, and strategy needs fit the first validation batch.",
+    subDescription:
+      "This stage does not fabricate consulting, startup, or business internship experience and does not charge automatically. We will review your request and confirm which business-analysis asset plan fits your situation.",
+    statOneValue: "Strategy validation",
+    statOneLabel:
+      "Testing whether students are willing to pay for structured business analysis and market entry assets",
+    statTwoValue: "BusinessProof",
+    statTwoLabel:
+      "Focused on market choice, customer problem, competitive judgment, and entry route",
+    statThreeValue: "Real analysis",
+    statThreeLabel:
+      "The kit is for business-analysis training, not fake experience packaging",
+    sideCardOneTitle: "What the BusinessProof Starter Kit includes",
+    sideCardOneItems: [
+      "Market entry problem definition",
+      "Market sizing and segmentation",
+      "Competitive landscape analysis",
+      "Entry strategy design",
+      "Execution roadmap and metrics",
+      "Resume bullet drafts",
+      "Interview defense questions",
+    ],
+    submitLabel: "Submit BusinessProof test request",
+    starterPackLabel: "¥99 BusinessProof Starter Kit",
+    personalizedPlanLabel: "¥199+ Personalized BusinessProof Plan",
   },
   {
-    value: "199-personalized-plan",
-    label: "¥199+ Personalized TechProof Plan",
-  },
-  {
-    value: "need-discussion",
-    label: "Need discussion first",
+    asset: "ResearchProof",
+    source: "researchproof-literature-method-kit",
+    titleLineOne: "Apply for ResearchProof",
+    titleLineTwo: "Literature and method test",
+    description:
+      "You are applying for the early test of the ResearchProof Literature and Method Kit. This request helps us judge whether your research topic, literature foundation, and method needs fit the first validation batch.",
+    subDescription:
+      "This stage does not ghostwrite papers, fabricate research experience, or charge automatically. We will review your request and confirm whether you need a roadmap review, Starter Kit, or personalized research asset plan.",
+    statOneValue: "Research asset",
+    statOneLabel:
+      "Testing whether students are willing to pay for structured literature review and method explanation assets",
+    statTwoValue: "ResearchProof",
+    statTwoLabel:
+      "Focused on research questions, literature position, method fit, and research boundaries",
+    statThreeValue: "Academic integrity",
+    statThreeLabel:
+      "The kit is for research training, not paper ghostwriting or fabricated research experience",
+    sideCardOneTitle: "What the ResearchProof Starter Kit includes",
+    sideCardOneItems: [
+      "Research question definition",
+      "Literature review structure",
+      "Method choice explanation",
+      "Evidence and material checklist",
+      "Research boundary and limitation",
+      "Resume bullet drafts",
+      "Interview defense questions",
+    ],
+    submitLabel: "Submit ResearchProof test request",
+    starterPackLabel: "¥99 ResearchProof Starter Kit",
+    personalizedPlanLabel: "¥199+ Personalized ResearchProof Plan",
   },
 ];
-
 export default async function EnglishRequestAccessPage({
   searchParams,
 }: PageProps) {
@@ -74,10 +201,13 @@ export default async function EnglishRequestAccessPage({
   );
   const error = getErrorMessage(getSearchParam(resolvedSearchParams, "error"));
 
-  const isTechProofPaidTest =
-    sourcePage === "techproof-starter-pack" && assetIntent === "TechProof";
-
-  const pageCopy = getPageCopy(isTechProofPaidTest);
+  const activeKit = getActiveAssetKit(sourcePage, assetIntent);
+  const pageCopy = activeKit || defaultPageCopy;
+  const priceOptions = getPriceOptions(activeKit);
+  const defaultPurchaseIntent = activeKit
+    ? `interested-in-paid-${activeKit.asset.toLowerCase()}-test`
+    : "";
+  const defaultPriceRange = activeKit ? "99-starter-pack" : "";
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -234,7 +364,6 @@ export default async function EnglishRequestAccessPage({
                   ))}
                 </div>
               </div>
-
               <TextAreaField
                 label="Main problem"
                 name="primaryNeed"
@@ -250,16 +379,18 @@ export default async function EnglishRequestAccessPage({
                   <select
                     name="purchaseIntent"
                     className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-500"
-                    defaultValue={
-                      isTechProofPaidTest
-                        ? "interested-in-paid-techproof-test"
-                        : ""
-                    }
+                    defaultValue={defaultPurchaseIntent}
                   >
                     <option value="">Not sure yet</option>
-                    <option value="interested-in-paid-techproof-test">
-                      I am interested in the paid test
-                    </option>
+                    {activeKit ? (
+                      <option value={defaultPurchaseIntent}>
+                        I am interested in the {activeKit.asset} paid test
+                      </option>
+                    ) : (
+                      <option value="interested-in-paid-asset-test">
+                        I am interested in the paid test
+                      </option>
+                    )}
                     <option value="need-free-preview-first">
                       I want to see the free roadmap preview first
                     </option>
@@ -279,7 +410,7 @@ export default async function EnglishRequestAccessPage({
                   <select
                     name="expectedPriceRange"
                     className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-500"
-                    defaultValue={isTechProofPaidTest ? "99-starter-pack" : ""}
+                    defaultValue={defaultPriceRange}
                   >
                     {priceOptions.map((option) => (
                       <option key={option.value || "empty"} value={option.value}>
@@ -295,7 +426,7 @@ export default async function EnglishRequestAccessPage({
                   type="checkbox"
                   name="willingToTest"
                   value="true"
-                  defaultChecked={isTechProofPaidTest}
+                  defaultChecked={Boolean(activeKit)}
                   className="mt-1"
                 />
                 <span className="text-sm leading-7 text-neutral-400">
@@ -363,66 +494,90 @@ export default async function EnglishRequestAccessPage({
     </main>
   );
 }
+const defaultPageCopy = {
+  titleLineOne: "Request MajorProof",
+  titleLineTwo: "early access",
+  description:
+    "Fill in your major, year, target goal, and current problem. This helps us judge which Proof Asset direction fits you and whether you are suitable for the early test group.",
+  subDescription:
+    "The current stage is mainly for product validation, demand judgment, and early-user communication. Submitting a request does not create a payment obligation or automatically create an account.",
+  statOneValue: "Demand judgment",
+  statOneLabel:
+    "Identify whether you need a technical, finance, business, or research asset",
+  statTwoValue: "Early users",
+  statTwoLabel:
+    "Priority goes to students with clear goals, clear problems, and willingness to give feedback",
+  statThreeValue: "Verifiable assets",
+  statThreeLabel:
+    "Focus on what kind of presentable and explainable work you currently lack",
+  sideCardOneTitle: "What we care about",
+  sideCardOneItems: [
+    "Your academic background",
+    "Your target direction",
+    "The asset type you lack",
+    "Whether your pain point is clear",
+    "Whether you are willing to test",
+    "Whether you may become a paid user",
+  ],
+  submitLabel: "Submit request",
+};
 
-function getPageCopy(isTechProofPaidTest: boolean) {
-  if (isTechProofPaidTest) {
-    return {
-      titleLineOne: "Apply for TechProof",
-      titleLineTwo: "Starter Pack paid test",
-      description:
-        "You are applying for the early paid test of the TechProof AI Document Review Platform Starter Pack. This request helps us judge whether your background, target, and current problem fit the first delivery batch.",
-      subDescription:
-        "This stage does not charge automatically and does not promise outcomes. We will review your request and confirm whether you want to test the ¥29, ¥99, or personalized plan options.",
-      statOneValue: "Paid validation",
-      statOneLabel:
-        "Testing whether students are willing to pay for a structured technical project asset pack",
-      statTwoValue: "TechProof",
-      statTwoLabel:
-        "Focused on engineering, CS, EE, AI, and data-related technical project assets",
-      statThreeValue: "Manual review",
-      statThreeLabel:
-        "Submission does not trigger automatic payment. The delivery scope must be confirmed later.",
-      sideCardOneTitle: "What the TechProof Starter Pack includes",
-      sideCardOneItems: [
-        "Professional context",
-        "Functional structure",
-        "Technology stack suggestion",
-        "Final deliverable checklist",
-        "Process evidence checklist",
-        "Resume bullet drafts",
-        "Interview defense questions",
-      ],
-      submitLabel: "Submit paid test request",
-    };
+function getActiveAssetKit(sourcePage: string, assetIntent: string) {
+  return (
+    assetKitConfigs.find(
+      (config) => config.source === sourcePage && config.asset === assetIntent
+    ) || null
+  );
+}
+
+function getPriceOptions(activeKit: AssetKitConfig | null) {
+  if (!activeKit) {
+    return [
+      {
+        value: "",
+        label: "Not sure yet",
+      },
+      {
+        value: "29-roadmap-review",
+        label: "¥29 Roadmap Review",
+      },
+      {
+        value: "99-starter-pack",
+        label: "¥99 Starter Pack",
+      },
+      {
+        value: "199-personalized-plan",
+        label: "¥199+ Personalized Plan",
+      },
+      {
+        value: "need-discussion",
+        label: "Need discussion first",
+      },
+    ];
   }
 
-  return {
-    titleLineOne: "Request MajorProof",
-    titleLineTwo: "early access",
-    description:
-      "Fill in your major, year, target goal, and current problem. This helps us judge which Proof Asset direction fits you and whether you are suitable for the early test group.",
-    subDescription:
-      "The current stage is mainly for product validation, demand judgment, and early-user communication. Submitting a request does not create a payment obligation or automatically create an account.",
-    statOneValue: "Demand judgment",
-    statOneLabel:
-      "Identify whether you need a technical, finance, business, or research asset",
-    statTwoValue: "Early users",
-    statTwoLabel:
-      "Priority goes to students with clear goals, clear problems, and willingness to give feedback",
-    statThreeValue: "Verifiable assets",
-    statThreeLabel:
-      "Focus on what kind of presentable and explainable work you currently lack",
-    sideCardOneTitle: "What we care about",
-    sideCardOneItems: [
-      "Your academic background",
-      "Your target direction",
-      "The asset type you lack",
-      "Whether your pain point is clear",
-      "Whether you are willing to test",
-      "Whether you may become a paid user",
-    ],
-    submitLabel: "Submit request",
-  };
+  return [
+    {
+      value: "",
+      label: "Not sure yet",
+    },
+    {
+      value: "29-roadmap-review",
+      label: "¥29 Roadmap Review",
+    },
+    {
+      value: "99-starter-pack",
+      label: activeKit.starterPackLabel,
+    },
+    {
+      value: "199-personalized-plan",
+      label: activeKit.personalizedPlanLabel,
+    },
+    {
+      value: "need-discussion",
+      label: "Need discussion first",
+    },
+  ];
 }
 
 function FormField({
@@ -451,7 +606,6 @@ function FormField({
     </label>
   );
 }
-
 function TextAreaField({
   label,
   name,
