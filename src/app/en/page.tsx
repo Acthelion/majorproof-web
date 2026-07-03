@@ -36,7 +36,7 @@ export default function EnglishHomePage() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="/ai-roadmap-preview"
+              href="/en/ai-roadmap-preview"
               className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
             >
               Try AI Roadmap Preview
@@ -146,6 +146,7 @@ export default function EnglishHomePage() {
                 examples={category.enExamples}
                 abilities={category.enAbilities}
                 href={getCategoryHref(category.name)}
+                actionLabel={getCategoryActionLabel(category.name)}
               />
             ))}
           </div>
@@ -248,7 +249,7 @@ export default function EnglishHomePage() {
 
             <div className="flex flex-col gap-3">
               <a
-                href="/ai-roadmap-preview"
+                href="/en/ai-roadmap-preview"
                 className="rounded-full bg-neutral-100 px-6 py-3 text-center font-medium text-neutral-950 transition hover:bg-white"
               >
                 Try AI Roadmap Preview
@@ -274,22 +275,30 @@ export default function EnglishHomePage() {
 
 function getCategoryHref(name: string) {
   if (name === "TechProof") {
-    return "/product/techproof-ai-document-review/starter-pack";
+    return "/en/product/techproof-ai-document-review/starter-pack";
   }
 
   if (name === "FinanceProof") {
-    return "/product/financeproof-company-research-valuation-kit";
+    return "/en/request-access?source=en-home-category&asset=FinanceProof";
   }
 
   if (name === "BusinessProof") {
-    return "/product/businessproof-market-entry-strategy-kit";
+    return "/en/request-access?source=en-home-category&asset=BusinessProof";
   }
 
   if (name === "ResearchProof") {
-    return "/product/researchproof-literature-method-kit";
+    return "/en/request-access?source=en-home-category&asset=ResearchProof";
   }
 
-  return "/assets";
+  return "/en/request-access";
+}
+
+function getCategoryActionLabel(name: string) {
+  if (name === "TechProof") {
+    return "View TechProof Starter Pack";
+  }
+
+  return "Request this asset direction";
 }
 
 function StatBlock({ value, label }: { value: string; label: string }) {
@@ -309,6 +318,7 @@ function CategoryCard({
   examples,
   abilities,
   href,
+  actionLabel,
 }: {
   name: string;
   audience: string;
@@ -317,6 +327,7 @@ function CategoryCard({
   examples: string[];
   abilities: string[];
   href: string;
+  actionLabel: string;
 }) {
   return (
     <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6 transition hover:border-neutral-600">
@@ -374,7 +385,7 @@ function CategoryCard({
         href={href}
         className="mt-8 inline-flex rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-neutral-200 transition hover:border-neutral-500 hover:text-white"
       >
-        View validation page
+        {actionLabel}
       </a>
     </div>
   );
