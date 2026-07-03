@@ -100,6 +100,18 @@ function getEnglishHref(pathname: string) {
     return "/en/product/techproof-ai-document-review/starter-pack";
   }
 
+  if (path === "/product/financeproof-company-research-valuation-kit") {
+    return "/en/product/financeproof-company-research-valuation-kit";
+  }
+
+  if (path === "/product/businessproof-market-entry-strategy-kit") {
+    return "/en/product/businessproof-market-entry-strategy-kit";
+  }
+
+  if (path === "/product/researchproof-literature-method-kit") {
+    return "/en/product/researchproof-literature-method-kit";
+  }
+
   if (path.startsWith("/product/")) {
     return "/en#categories";
   }
@@ -159,6 +171,18 @@ function getChineseHref(pathname: string) {
 
   if (path === "/en/product/techproof-ai-document-review/starter-pack") {
     return "/product/techproof-ai-document-review/starter-pack";
+  }
+
+  if (path === "/en/product/financeproof-company-research-valuation-kit") {
+    return "/product/financeproof-company-research-valuation-kit";
+  }
+
+  if (path === "/en/product/businessproof-market-entry-strategy-kit") {
+    return "/product/businessproof-market-entry-strategy-kit";
+  }
+
+  if (path === "/en/product/researchproof-literature-method-kit") {
+    return "/product/researchproof-literature-method-kit";
   }
 
   if (path.startsWith("/en/")) {

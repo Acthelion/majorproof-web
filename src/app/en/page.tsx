@@ -279,7 +279,7 @@ function getCategoryHref(name: string) {
   }
 
   if (name === "FinanceProof") {
-    return "/en/request-access?source=en-home-category&asset=FinanceProof";
+    return "/en/product/financeproof-company-research-valuation-kit";
   }
 
   if (name === "BusinessProof") {
@@ -296,6 +296,10 @@ function getCategoryHref(name: string) {
 function getCategoryActionLabel(name: string) {
   if (name === "TechProof") {
     return "View TechProof Starter Pack";
+  }
+
+  if (name === "FinanceProof") {
+    return "View FinanceProof Valuation Kit";
   }
 
   return "Request this asset direction";
