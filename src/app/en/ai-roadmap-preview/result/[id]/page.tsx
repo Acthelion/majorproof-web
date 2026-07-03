@@ -26,10 +26,16 @@ type RoadmapPreviewRecord = {
   created_at: string;
 };
 
-type RoadmapBlock =
-  | { type: "heading"; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "list"; items: string[] };
+type MemoField = {
+  label: string;
+  body: string;
+};
+
+type MemoSection = {
+  title: string;
+  fields: MemoField[];
+  fallbackBody: string[];
+};
 
 export default async function EnglishRoadmapPreviewResultPage({
   params,
@@ -157,17 +163,24 @@ export default async function EnglishRoadmapPreviewResultPage({
         </aside>
 
         <article className="rounded-3xl border border-neutral-800 bg-neutral-900 p-6 md:p-8">
-          <div className="mb-8">
-            <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
-              AI Result
-            </p>
+<div className="mb-8">
+  <p className="mb-4 text-sm uppercase tracking-[0.25em] text-neutral-500">
+    Professional Assessment Memo
+  </p>
 
-            <h2 className="text-4xl font-semibold tracking-tight">
-              Roadmap preview
-            </h2>
-          </div>
+  <h2 className="text-4xl font-semibold tracking-tight">
+    Evidence-based roadmap review
+  </h2>
 
-          <RoadmapResultContent content={preview.ai_result} />
+  <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
+    This memo is a preliminary assessment generated from the information
+    submitted by the student. It should be read as a conservative planning
+    reference, not as a guarantee of admission, employment, internship outcome,
+    scholarship result, or interview performance.
+  </p>
+</div>
+
+<RoadmapResultContent content={preview.ai_result} />
         </article>
       </section>
 
@@ -246,9 +259,9 @@ function getRequestAccessHref(asset: string | null) {
   return "/en/request-access";
 }
 function RoadmapResultContent({ content }: { content: string }) {
-  const blocks = parseRoadmapContent(content);
+  const sections = parseMemoContent(content);
 
-  if (blocks.length === 0) {
+  if (sections.length === 0) {
     return (
       <p className="text-base leading-8 text-neutral-400">
         No roadmap content was generated.
@@ -257,128 +270,171 @@ function RoadmapResultContent({ content }: { content: string }) {
   }
 
   return (
-    <div className="space-y-6">
-      {blocks.map((block, index) => {
-        if (block.type === "heading") {
-          return (
-            <h2
-              key={`${block.text}-${index}`}
-              className="pt-4 text-2xl font-semibold tracking-tight text-neutral-100"
-            >
-              {block.text}
-            </h2>
-          );
-        }
-
-        if (block.type === "paragraph") {
-          return (
-            <p
-              key={`${block.text}-${index}`}
-              className="text-base leading-8 text-neutral-300"
-            >
-              {block.text}
-            </p>
-          );
-        }
-
-        return (
-          <ul
-            key={`list-${index}`}
-            className="space-y-3 rounded-3xl border border-neutral-800 bg-neutral-950 p-6"
-          >
-            {block.items.map((item) => (
-              <li
-                key={item}
-                className="flex gap-3 text-sm leading-7 text-neutral-400"
-              >
-                <span className="mt-3 h-1.5 w-1.5 flex-none rounded-full bg-neutral-500" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        );
-      })}
+    <div className="space-y-5">
+      {sections.map((section, index) => (
+        <MemoSectionCard
+          key={`${section.title}-${index}`}
+          index={index}
+          section={section}
+        />
+      ))}
     </div>
   );
 }
 
-function parseRoadmapContent(content: string): RoadmapBlock[] {
+function MemoSectionCard({
+  index,
+  section,
+}: {
+  index: number;
+  section: MemoSection;
+}) {
+  return (
+    <section className="rounded-3xl border border-neutral-800 bg-neutral-950 p-6">
+      <div className="mb-6 flex items-start gap-4">
+        <div className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-neutral-700 text-sm font-medium text-neutral-300">
+          {String(index + 1).padStart(2, "0")}
+        </div>
+
+        <div>
+          <p className="mb-2 text-xs uppercase tracking-[0.25em] text-neutral-500">
+            Assessment Section
+          </p>
+          <h3 className="text-2xl font-semibold tracking-tight text-neutral-100">
+            {removeLeadingSectionNumber(section.title)}
+          </h3>
+        </div>
+      </div>
+
+      {section.fields.length > 0 ? (
+        <div className="grid gap-4">
+          {section.fields.map((field, fieldIndex) => (
+            <div
+              key={`field-${index}-${fieldIndex}-${field.label}`}
+              className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5"
+            >
+              <p className="mb-3 text-sm font-medium text-neutral-200">
+                {field.label}
+              </p>
+              <p className="text-sm leading-7 text-neutral-400">{field.body}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {section.fallbackBody.map((paragraph, paragraphIndex) => (
+            <p
+              key={`paragraph-${index}-${paragraphIndex}`}
+              className="text-sm leading-7 text-neutral-400"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function parseMemoContent(content: string): MemoSection[] {
   const lines = content
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map((line) => sanitizeGeneratedLine(line))
     .filter(Boolean);
 
-  const blocks: RoadmapBlock[] = [];
-  let listItems: string[] = [];
-
-  function flushList() {
-    if (listItems.length > 0) {
-      blocks.push({
-        type: "list",
-        items: listItems,
-      });
-      listItems = [];
-    }
-  }
+  const sections: MemoSection[] = [];
+  let currentSection: MemoSection | null = null;
 
   for (const line of lines) {
-    if (isHeadingLine(line)) {
-      flushList();
-      blocks.push({
-        type: "heading",
-        text: cleanHeadingLine(line),
-      });
+    if (isMemoSectionTitle(line)) {
+      if (currentSection) {
+        sections.push(currentSection);
+      }
+
+      currentSection = {
+        title: line,
+        fields: [],
+        fallbackBody: [],
+      };
+
       continue;
     }
 
-    if (isListLine(line)) {
-      listItems.push(cleanListLine(line));
-      continue;
+    if (!currentSection) {
+      currentSection = {
+        title: "Assessment note",
+        fields: [],
+        fallbackBody: [],
+      };
     }
 
-    flushList();
+    const field = parseMemoField(line);
 
-    blocks.push({
-      type: "paragraph",
-      text: line,
-    });
+    if (field) {
+      currentSection.fields.push(field);
+    } else {
+      currentSection.fallbackBody.push(line);
+    }
   }
 
-  flushList();
+  if (currentSection) {
+    sections.push(currentSection);
+  }
 
-  return blocks;
+  return sections.filter(
+    (section) =>
+      section.title.trim() ||
+      section.fields.length > 0 ||
+      section.fallbackBody.length > 0
+  );
 }
 
-function isHeadingLine(line: string) {
-  if (/^#{1,6}\s+/.test(line)) {
-    return true;
-  }
-
-  if (/^\*\*.+\*\*$/.test(line)) {
-    return true;
-  }
-
-  if (/^Part\s+[0-9]+/i.test(line)) {
-    return true;
-  }
-
-  if (/^Step\s+[0-9]+/i.test(line)) {
-    return true;
-  }
-
-  if (/^[0-9]+[.)]\s+[^.!?]{2,80}$/.test(line) && !line.includes(",")) {
-    return true;
-  }
-
-  return false;
+function isMemoSectionTitle(line: string) {
+  return /^[0-9]+[.)]?\s+/.test(line);
 }
-function cleanHeadingLine(line: string) {
+
+function parseMemoField(line: string): MemoField | null {
+  const normalized = line.trim();
+
+  const englishColonIndex = normalized.indexOf(":");
+  const chineseColonIndex = normalized.indexOf("：");
+
+  const colonIndex =
+    englishColonIndex >= 0 && chineseColonIndex >= 0
+      ? Math.min(englishColonIndex, chineseColonIndex)
+      : Math.max(englishColonIndex, chineseColonIndex);
+
+  if (colonIndex > 0) {
+    const label = normalized.slice(0, colonIndex).trim();
+    const body = normalized.slice(colonIndex + 1).trim();
+
+    if (label.length > 0 && label.length <= 80 && body.length > 0) {
+      return {
+        label,
+        body,
+      };
+    }
+  }
+
+  return null;
+}
+
+function removeLeadingSectionNumber(value: string) {
+  return value.replace(/^[0-9]+[.)]?\s+/, "").trim();
+}
+
+function sanitizeGeneratedLine(line: string) {
   return line
-    .replace(/^#{1,6}\s+/, "")
-    .replace(/^\*\*/, "")
-    .replace(/\*\*$/, "")
+    .replace(/```/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/__/g, "")
+    .replace(/^#{1,6}\s*/g, "")
+    .replace(/^\s*[-*•]\s+/g, "")
+    .replace(/^\s*[-–—]{3,}\s*$/g, "")
+    .replace(/\s+$/g, "")
     .trim();
 }
+
 
 function isListLine(line: string) {
   return /^[-*]\s+/.test(line) || /^[0-9]+[.)]\s+/.test(line);
