@@ -1,3 +1,4 @@
+import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 type SiteNavProps = {
@@ -5,47 +6,67 @@ type SiteNavProps = {
 };
 
 export default function SiteNav({ locale }: SiteNavProps) {
-  const isZh = locale === "zh";
+  const isEnglish = locale === "en";
 
-  const homeHref = isZh ? "/" : "/en";
-  const assetsHref = isZh ? "/assets" : "/en/assets";
-  const integrityHref = isZh ? "/integrity" : "/en/integrity";
-  const requestHref = isZh ? "/request-access" : "/en/request-access";
+  const homeHref = isEnglish ? "/en" : "/";
+  const methodHref = isEnglish ? "/en#method" : "/#method";
+  const categoriesHref = isEnglish ? "/en#categories" : "/#categories";
+  const previewHref = isEnglish
+    ? "/en/ai-roadmap-preview"
+    : "/ai-roadmap-preview";
+  const requestHref = isEnglish ? "/en/request-access" : "/request-access";
 
   return (
-    <nav className="border-b border-neutral-800 bg-neutral-950/90 px-6 py-5 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6">
-        <a href={homeHref} className="group">
-          <div className="text-lg font-semibold tracking-tight text-neutral-100">
-            MajorProof
-          </div>
-          <div className="text-xs text-neutral-500">
-            {isZh
-              ? "专业能力证据资产系统"
-              : "Evidence-based professional assets"}
-          </div>
-        </a>
+    <header className="sticky top-0 z-50 border-b border-neutral-900 bg-neutral-950/85 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <Link
+          href={homeHref}
+          className="text-sm font-semibold tracking-[0.25em] text-neutral-100"
+        >
+          MAJORPROOF
+        </Link>
 
-        <div className="hidden items-center gap-6 text-sm text-neutral-400 md:flex">
-          <a href={`${homeHref}#method`} className="hover:text-neutral-100">
-            {isZh ? "资产方法" : "Asset Method"}
+        <nav className="hidden items-center gap-6 text-sm text-neutral-400 md:flex">
+          <a
+            href={methodHref}
+            className="transition hover:text-neutral-100"
+          >
+            {isEnglish ? "Method" : "方法"}
           </a>
-          <a href={`${homeHref}#categories`} className="hover:text-neutral-100">
-            {isZh ? "专业方向" : "Categories"}
+
+          <a
+            href={categoriesHref}
+            className="transition hover:text-neutral-100"
+          >
+            {isEnglish ? "Assets" : "资产方向"}
           </a>
-          <a href={assetsHref} className="hover:text-neutral-100">
-            {isZh ? "资产库" : "Assets"}
-          </a>
-          <a href={integrityHref} className="hover:text-neutral-100">
-            {isZh ? "诚信规范" : "Integrity"}
-          </a>
-          <a href={requestHref} className="hover:text-neutral-100">
-            {isZh ? "早期访问" : "Request Access"}
-          </a>
+
+          <Link
+            href={previewHref}
+            className="transition hover:text-neutral-100"
+          >
+            {isEnglish ? "AI Preview" : "AI 路线预览"}
+          </Link>
+
+          <Link
+            href={requestHref}
+            className="transition hover:text-neutral-100"
+          >
+            {isEnglish ? "Request Access" : "申请访问"}
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher locale={locale} />
+
+          <Link
+            href={requestHref}
+            className="hidden rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-950 transition hover:bg-white sm:inline-flex"
+          >
+            {isEnglish ? "Start" : "开始"}
+          </Link>
         </div>
-
-        <LanguageSwitcher locale={locale} />
       </div>
-    </nav>
+    </header>
   );
 }
