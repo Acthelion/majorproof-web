@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const localeCookieName = "majorproof_locale";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (shouldSkipMiddleware(request)) {
+  if (shouldSkipProxy(request)) {
     return NextResponse.next();
   }
 
@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-function shouldSkipMiddleware(request: NextRequest) {
+function shouldSkipProxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (request.method !== "GET" && request.method !== "HEAD") {
