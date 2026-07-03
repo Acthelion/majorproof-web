@@ -283,11 +283,11 @@ function getCategoryHref(name: string) {
   }
 
   if (name === "BusinessProof") {
-    return "/en/request-access?source=en-home-category&asset=BusinessProof";
+    return "/en/product/businessproof-market-entry-strategy-kit";
   }
 
   if (name === "ResearchProof") {
-    return "/en/request-access?source=en-home-category&asset=ResearchProof";
+    return "/en/product/researchproof-literature-method-kit";
   }
 
   return "/en/request-access";
@@ -300,6 +300,14 @@ function getCategoryActionLabel(name: string) {
 
   if (name === "FinanceProof") {
     return "View FinanceProof Valuation Kit";
+  }
+
+  if (name === "BusinessProof") {
+    return "View BusinessProof Strategy Kit";
+  }
+
+  if (name === "ResearchProof") {
+    return "View ResearchProof Method Kit";
   }
 
   return "Request this asset direction";

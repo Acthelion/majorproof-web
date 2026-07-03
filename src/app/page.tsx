@@ -265,11 +265,11 @@ function getCategoryHref(name: string) {
   }
 
   if (name === "BusinessProof") {
-    return "/request-access?source=zh-home-category&asset=BusinessProof";
+    return "/product/businessproof-market-entry-strategy-kit";
   }
 
   if (name === "ResearchProof") {
-    return "/request-access?source=zh-home-category&asset=ResearchProof";
+    return "/product/researchproof-literature-method-kit";
   }
 
   return "/request-access";
@@ -282,6 +282,14 @@ function getCategoryActionLabel(name: string) {
 
   if (name === "FinanceProof") {
     return "查看 FinanceProof 估值资产包";
+  }
+
+  if (name === "BusinessProof") {
+    return "查看 BusinessProof 策略资产包";
+  }
+
+  if (name === "ResearchProof") {
+    return "查看 ResearchProof 研究资产包";
   }
 
   return "申请该资产方向";
