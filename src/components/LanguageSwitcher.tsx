@@ -68,6 +68,10 @@ function getEnglishHref(pathname: string) {
     return "/en/request-access";
   }
 
+  if (path === "/request-access/thanks") {
+    return "/en/request-access/thanks";
+  }
+
   if (path === "/integrity") {
     return "/en/integrity";
   }
@@ -80,8 +84,20 @@ function getEnglishHref(pathname: string) {
     return "/en/terms";
   }
 
-  if (path === "/assets" || path.startsWith("/assets/")) {
-    return "/en#categories";
+  if (path === "/assets") {
+    return "/en/assets";
+  }
+
+  if (path.startsWith("/assets/")) {
+    return `/en${path}`;
+  }
+
+  if (path === "/product/techproof-ai-document-review") {
+    return "/en/product/techproof-ai-document-review";
+  }
+
+  if (path === "/product/techproof-ai-document-review/starter-pack") {
+    return "/en/product/techproof-ai-document-review/starter-pack";
   }
 
   if (path.startsWith("/product/")) {
@@ -113,6 +129,10 @@ function getChineseHref(pathname: string) {
     return "/request-access";
   }
 
+  if (path === "/en/request-access/thanks") {
+    return "/request-access/thanks";
+  }
+
   if (path === "/en/integrity") {
     return "/integrity";
   }
@@ -125,8 +145,20 @@ function getChineseHref(pathname: string) {
     return "/terms";
   }
 
-  if (path === "/en/assets" || path.startsWith("/en/assets/")) {
+  if (path === "/en/assets") {
     return "/assets";
+  }
+
+  if (path.startsWith("/en/assets/")) {
+    return path.replace(/^\/en/, "");
+  }
+
+  if (path === "/en/product/techproof-ai-document-review") {
+    return "/product/techproof-ai-document-review";
+  }
+
+  if (path === "/en/product/techproof-ai-document-review/starter-pack") {
+    return "/product/techproof-ai-document-review/starter-pack";
   }
 
   if (path.startsWith("/en/")) {
