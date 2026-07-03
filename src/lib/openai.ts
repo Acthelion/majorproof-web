@@ -5,6 +5,8 @@ type ChatMessage = {
   content: string;
 };
 
+const defaultModel = "deepseek-v4-flash";
+
 export async function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
   const baseURL = process.env.OPENAI_BASE_URL;
@@ -18,6 +20,7 @@ export async function getOpenAIClient() {
   const client = new OpenAI({
     apiKey,
     baseURL: baseURL || undefined,
+    timeout: 25000,
   });
 
   if (isDeepSeekBaseURL(baseURL)) {
@@ -28,7 +31,7 @@ export async function getOpenAIClient() {
 }
 
 export function getOpenAIModel() {
-  return process.env.OPENAI_MODEL || "deepseek-v4-flash";
+  return process.env.OPENAI_MODEL || defaultModel;
 }
 
 export function getAIProviderName() {
@@ -51,15 +54,19 @@ function addDeepSeekResponsesCompatibility(client: any) {
     create: async (params: any) => {
       const messages = convertResponsesInputToChatMessages(params);
 
+      const requestedMaxTokens =
+        typeof params.max_output_tokens === "number"
+          ? params.max_output_tokens
+          : 900;
+
+      const maxTokens = Math.min(requestedMaxTokens, 900);
+
       const response = await client.chat.completions.create({
         model: params.model || getOpenAIModel(),
         messages,
         temperature:
-          typeof params.temperature === "number" ? params.temperature : 0.25,
-        max_tokens:
-          typeof params.max_output_tokens === "number"
-            ? params.max_output_tokens
-            : undefined,
+          typeof params.temperature === "number" ? params.temperature : 0.15,
+        max_tokens: maxTokens,
       });
 
       const rawOutputText =
@@ -78,7 +85,6 @@ function addDeepSeekResponsesCompatibility(client: any) {
 
   return client;
 }
-
 function convertResponsesInputToChatMessages(params: any): ChatMessage[] {
   const messages: ChatMessage[] = [];
 
@@ -112,7 +118,7 @@ function convertResponsesInputToChatMessages(params: any): ChatMessage[] {
   if (messages.length === 1) {
     messages.push({
       role: "user",
-      content: "Generate a concise professional roadmap preview.",
+      content: "Generate a concise professional assessment memo.",
     });
   }
 
@@ -123,45 +129,28 @@ function buildStrictStyleInstructions(originalInstructions: string) {
   return [
     originalInstructions,
     "",
-    "MajorProof writing standard:",
-    "",
-    "You are not a motivational career coach.",
-    "You are an academic and professional evidence advisor evaluating whether a university student can build a defensible Proof Asset.",
-    "Write as if preparing a conservative assessment memo for manual review.",
-    "",
-    "Required tone:",
-    "Rigorous, cautious, analytical, restrained, and logically explicit.",
-    "The writing should sound like an evidence assessment, not a marketing page, career coaching script, or generic AI roadmap.",
-    "Avoid motivational, promotional, exaggerated, optimistic, or emotionally persuasive language.",
-    "",
-    "Forbidden style:",
-    "Do not use Markdown formatting.",
+    "MajorProof output standard:",
+    "Write as a conservative professional assessment memo for a university student.",
+    "Use a rigorous, cautious, analytical, restrained tone.",
+    "Do not write like a motivational coach, marketing page, generic AI assistant, or career influencer.",
+    "Do not use Markdown.",
     "Do not use asterisks, bold markers, hash headings, bullet symbols, emojis, tables, or decorative separators.",
-    "Do not use phrases such as unlock your potential, stand out from the crowd, boost competitiveness, quickly improve, high-impact project, perfect portfolio, transform your future, or similar expressions.",
-    "Do not use vague praise such as strong potential, excellent fit, impressive background, or great opportunity unless clearly supported by the supplied information.",
-    "",
-    "Integrity requirements:",
-    "Do not promise admission, employment, internships, grades, scholarships, interviews, or any guaranteed outcome.",
-    "Do not fabricate experience, projects, research, internships, achievements, metrics, publications, supervisor relationships, or resume claims.",
-    "Do not suggest exaggerating weak evidence into strong evidence.",
+    "Do not promise admission, employment, internships, grades, scholarships, interview success, or any guaranteed outcome.",
+    "Do not fabricate or inflate experience, projects, research, internships, metrics, publications, or resume claims.",
+    "Tie every judgement to the student's provided major, year, target goal, existing experience, interested asset direction, and main problem.",
     "If information is insufficient, state the limitation directly.",
+    "Prefer concrete evidence requirements over general advice.",
+    "Prefer defensibility over ambition.",
     "",
-    "Reasoning requirements:",
-    "Every major judgement must be tied to the student's provided major, year, target goal, existing experience, interested asset direction, and main problem.",
-    "Do not infer unstated experience.",
-    "Do not assume the student has technical, financial, business, or research skills unless they are explicitly provided.",
-    "When a judgement is uncertain, use cautious language such as: appears more defensible, may be suitable, currently cannot be determined, based on the available information, this would need to be verified.",
-    "",
-    "Output format:",
-    "Write as a professional assessment memo.",
+    "Output length control:",
     "Use exactly six numbered sections.",
+    "Each section must contain exactly three labelled lines.",
+    "Each labelled line must be concise and specific.",
+    "Each labelled line must be no more than 35 English words or 70 Chinese characters.",
     "Do not add an introduction before section 1.",
     "Do not add a conclusion after section 6.",
-    "Each section must have a numbered title, followed by 2 to 4 labelled lines.",
-    "Each labelled line should be concise but specific.",
-    "Do not use bullet symbols.",
     "",
-    "English section structure:",
+    "English format:",
     "1. Initial assessment",
     "Judgement:",
     "Basis:",
@@ -181,19 +170,18 @@ function buildStrictStyleInstructions(originalInstructions: string) {
     "Core route:",
     "Required deliverable:",
     "Process evidence:",
-    "Method explanation:",
     "",
     "5. Resume and interview boundary",
     "Defensible expression:",
     "What must not be claimed:",
-    "Likely interview pressure point:",
+    "Likely pressure point:",
     "",
     "6. Next action",
     "Immediate action:",
     "Verification needed:",
     "Manual review focus:",
     "",
-    "Chinese section structure:",
+    "Chinese format:",
     "1. 初步判断",
     "判断：",
     "依据：",
@@ -213,7 +201,6 @@ function buildStrictStyleInstructions(originalInstructions: string) {
     "核心路线：",
     "必须产出的成果：",
     "过程证据：",
-    "方法解释：",
     "",
     "5. 简历与面试表达边界",
     "可防守表达：",
@@ -225,20 +212,12 @@ function buildStrictStyleInstructions(originalInstructions: string) {
     "需要验证的信息：",
     "人工 review 重点：",
     "",
-    "Language rule:",
-    "Use English for English routes and Chinese for Chinese routes.",
-    "If the user's form language is mixed, follow the route language.",
-    "",
-    "Quality bar:",
-    "The output should feel like a restrained professional memo written for evaluating evidence quality.",
-    "Prefer precise limitations over broad encouragement.",
-    "Prefer concrete evidence requirements over general advice.",
-    "Prefer defensibility over ambition.",
+    "Follow the route language.",
+    "Avoid empty abstraction, vague praise, repeated boilerplate, and broad career slogans.",
   ]
     .filter(Boolean)
     .join("\n");
 }
-
 function convertInputItemToMessage(item: any): ChatMessage | null {
   if (typeof item === "string") {
     return {
@@ -318,7 +297,6 @@ function extractTextFromContentPart(part: any): string {
 
   return "";
 }
-
 function sanitizeGeneratedRoadmapText(value: string) {
   return value
     .split(/\r?\n/)
