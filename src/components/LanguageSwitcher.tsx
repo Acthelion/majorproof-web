@@ -7,6 +7,8 @@ type LanguageSwitcherProps = {
   locale: "zh" | "en";
 };
 
+const localeCookieName = "majorproof_locale";
+
 export default function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
   const pathname = usePathname() || "/";
 
@@ -17,6 +19,7 @@ export default function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
     <div className="flex items-center gap-1 rounded-full border border-neutral-800 bg-neutral-950 p-1 text-sm">
       <Link
         href={zhHref}
+        onClick={() => setLocalePreference("zh")}
         className={[
           "rounded-full px-3 py-1.5 transition",
           locale === "zh"
@@ -29,6 +32,7 @@ export default function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
 
       <Link
         href={enHref}
+        onClick={() => setLocalePreference("en")}
         className={[
           "rounded-full px-3 py-1.5 transition",
           locale === "en"
@@ -40,6 +44,10 @@ export default function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
       </Link>
     </div>
   );
+}
+
+function setLocalePreference(locale: "zh" | "en") {
+  document.cookie = `${localeCookieName}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 function getEnglishHref(pathname: string) {
@@ -197,9 +205,7 @@ function normalizePath(pathname: string) {
     return "/";
   }
 
-  const normalized = pathname.endsWith("/")
-    ? pathname.slice(0, -1)
-    : pathname;
+  const normalized = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
 
   return normalized || "/";
 }
